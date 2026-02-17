@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BookOn">
         <activity
+            android:name=".CommunityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BrowseActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

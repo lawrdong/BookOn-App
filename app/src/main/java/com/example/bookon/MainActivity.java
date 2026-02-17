@@ -1,12 +1,25 @@
 package com.example.bookon;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TextView tabBrowse = findViewById(R.id.tabBrowse);
+        TextView tabCommunity = findViewById(R.id.tabCommunity);
+
+        tabBrowse.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, BrowseActivity.class)));
+
+        tabCommunity.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, CommunityActivity.class)));
     }
 }

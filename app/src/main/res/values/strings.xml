@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Book On</string>
+
+    <string name="tab_home">Home</string>
+    <string name="tab_browse">Browse</string>
+    <string name="tab_community">Community</string>
+
+    <string name="login">Login</string>
+
+    <string name="welcome_title">Welcome to BookOn</string>
+    <string name="welcome_desc">Discover your next favorite read through a community of passionate readers. Curate your virtual library, share recommendations, and connect with fellow book lovers.</string>
+
+    <string name="start_exploring">Start Exploring</string>
+
+    <string name="your_library">Your Library</string>
+    <string name="books_rated">Books Rated</string>
+    <string name="community">Community</string>
+
+    <string name="zero_books">0 Books</string>
+    <string name="zero_ratings">0 Ratings</string>
+    <string name="zero_members">0 Members</string>
+
+    <string name="browse_screen">Browse Screen</string>
+    <string name="community_screen">Community Screen</string>
+
 </resources>
