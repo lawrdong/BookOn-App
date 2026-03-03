@@ -1,5 +1,6 @@
 package com.example.bookon;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -14,10 +15,13 @@ public class LoginActivity extends AppCompatActivity {
 
         Button btnLogin = findViewById(R.id.btnLogin);
 
-        //fake login to test UI
+        // fake login when user presses the button
         btnLogin.setOnClickListener(v -> {
-            AuthManager.setLoggedIn(this, true);
-            finish(); // return to previous screen
+            AuthManager.setLoggedIn(LoginActivity.this, true);
+
+            Intent intent = new Intent(LoginActivity.this, AccountActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 }

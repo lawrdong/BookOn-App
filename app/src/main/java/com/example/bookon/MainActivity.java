@@ -2,15 +2,9 @@ package com.example.bookon;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
-        TextView tabLogin = findViewById(R.id.tabLogin);
+        tabLogin = findViewById(R.id.tabLogin);
 
         //Browse Tab
         tabBrowse.setOnClickListener(v ->
@@ -35,12 +29,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Login Tab
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(MainActivity.this)) {
-                // Later: go to Account/Profile page
-                // For now.. go to Community / show a placeholder
-                startActivity(new Intent(MainActivity.this, CommunityActivity.class));
+            if (AuthManager.isLoggedIn(this)) {
+                startActivity(new Intent(this, AccountActivity.class));
             } else {
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(new Intent(this, LoginActivity.class));
             }
         });
     }

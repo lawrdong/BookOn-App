@@ -9,11 +9,17 @@ public class AuthManager {
 
     public static boolean isLoggedIn(Context context) {
         SharedPreferences sp = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        return sp.getBoolean(KEY_LOGGED_IN, false); // DEFAULT FALSE
+        return sp.getBoolean(KEY_LOGGED_IN, false);
     }
 
+    //helper --> fake login button
     public static void setLoggedIn(Context context, boolean value) {
         SharedPreferences sp = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         sp.edit().putBoolean(KEY_LOGGED_IN, value).apply();
+    }
+
+    public static void logout(Context context) {
+        SharedPreferences sp = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        sp.edit().putBoolean(KEY_LOGGED_IN, false).apply();
     }
 }

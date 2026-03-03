@@ -32,9 +32,11 @@ public class CommunityActivity extends AppCompatActivity {
         });
 
         //login tab
+        tabLogin = findViewById(R.id.tabLogin);
+
         tabLogin.setOnClickListener(v -> {
             if (AuthManager.isLoggedIn(this)) {
-                // placeholder
+                startActivity(new Intent(this, AccountActivity.class));
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
             }

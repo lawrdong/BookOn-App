@@ -50,15 +50,15 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         // LOGIN / ACCOUNT
-        if (tabLogin != null) {
-            tabLogin.setOnClickListener(v -> {
-                if (AuthManager.isLoggedIn(this)) {
-                    // placeholder
-                } else {
-                    startActivity(new Intent(this, LoginActivity.class));
-                }
-            });
-        }
+        tabLogin = findViewById(R.id.tabLogin);
+
+        tabLogin.setOnClickListener(v -> {
+            if (AuthManager.isLoggedIn(this)) {
+                startActivity(new Intent(this, AccountActivity.class));
+            } else {
+                startActivity(new Intent(this, LoginActivity.class));
+            }
+        });
 
         // RecyclerView setup
         RecyclerView recyclerView = findViewById(R.id.recyclerViewBooks);
