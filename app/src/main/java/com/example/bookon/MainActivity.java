@@ -2,6 +2,7 @@ package com.example.bookon;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +19,12 @@ public class MainActivity extends AppCompatActivity {
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
+        View btnStartExploring = findViewById(R.id.btnStartExploring);
 
+        btnStartExploring.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, BrowseActivity.class))
+        );
+        
         //Browse Tab
         tabBrowse.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, BrowseActivity.class)));
