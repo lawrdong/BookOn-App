@@ -64,6 +64,7 @@ public class BrowseActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerViewBooks);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        //Books
         BookRepository repo = new BookRepository();
         List<Book> books = repo.getTrendingBooks();
 

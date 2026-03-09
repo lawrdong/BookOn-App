@@ -53,7 +53,7 @@ public class AccountActivity extends AppCompatActivity {
         btnLogout.setOnClickListener(v -> {
             AuthManager.logout(AccountActivity.this);
 
-            finish();  // smooth logout
+            finish();
             overridePendingTransition(0, 0);
         });
     }

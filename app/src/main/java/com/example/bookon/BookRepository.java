@@ -5,16 +5,35 @@ import java.util.List;
 
 public class BookRepository {
 
-    //TEMPORARY (will use Google API)
     public List<Book> getTrendingBooks() {
         List<Book> books = new ArrayList<>();
 
-        books.add(new Book("id_1984", "1984", "George Orwell", null,
-                "A dystopian novel about surveillance and control."));
-        books.add(new Book("id_mice", "Of Mice and Men", "John Steinbeck", null,
-                "Two migrant workers pursue a dream during the Great Depression."));
-        books.add(new Book("id_flies", "Lord of the Flies", "William Golding", null,
-                "A group of boys struggle to survive on an uninhabited island."));
+        books.add(new Book(
+                "1984_id",
+                "1984",
+                "George Orwell",
+                "placeholder",
+                null,
+                null
+        ));
+
+        books.add(new Book(
+                "mice_id",
+                "Of Mice and Men",
+                "John Steinbeck",
+                "placeholder",
+                null,
+                null
+        ));
+
+        books.add(new Book(
+                "flies_id",
+                "Lord of the Flies",
+                "William Golding",
+                "placeholder",
+                null,
+                null
+        ));
 
         return books;
     }
