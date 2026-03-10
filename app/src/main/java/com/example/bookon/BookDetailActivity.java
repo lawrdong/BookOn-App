@@ -84,7 +84,9 @@ public class BookDetailActivity extends AppCompatActivity {
             if (!AuthManager.isLoggedIn(this)) {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
-                Toast.makeText(this, "Write Review W.I.P", Toast.LENGTH_SHORT).show();
+                Intent reviewIntent = new Intent(this, WriteReviewActivity.class);
+                reviewIntent.putExtra("title", title);
+                startActivity(reviewIntent);
             }
         });
 
