@@ -95,7 +95,15 @@ public class BookDetailActivity extends AppCompatActivity {
             if (!AuthManager.isLoggedIn(this)) {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
-                Toast.makeText(this, "Favorite feature W.I.P", Toast.LENGTH_SHORT).show();
+                String bookId = intent.getStringExtra("id");
+
+                if (FavoritesManager.isFavorite(this, bookId)) {
+                    FavoritesManager.removeFavorite(this, bookId);
+                    btnFavorite.setText("Favorite");
+                } else {
+                    FavoritesManager.addFavorite(this, bookId);
+                    btnFavorite.setText("Favorited");
+                }
             }
         });
     }
