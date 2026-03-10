@@ -2,10 +2,17 @@ package com.example.bookon;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +20,18 @@ import androidx.appcompat.app.AppCompatActivity;
 public class BrowseActivity extends AppCompatActivity {
 
     private TextView tabLogin;
+    private RecyclerView recyclerView;
+    private BookAdapter adapter;
+    private ProgressBar progressBar;
+    private EditText etSearch;
+    private Button btnSearch;
+    private List<Book> bookList = new ArrayList<>();
+    
+    private int startIndex = 0;
+    private final int maxResults = 20;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private String currentQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +42,9 @@ public class BrowseActivity extends AppCompatActivity {
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
+        progressBar = findViewById(R.id.progressBar);
+        etSearch = findViewById(R.id.etSearch);
+        btnSearch = findViewById(R.id.btnSearch);
 
         // HOME
         if (tabHome != null) {
@@ -30,13 +52,6 @@ public class BrowseActivity extends AppCompatActivity {
                 Intent intent = new Intent(BrowseActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
-            });
-        }
-
-        // BROWSE (current page)
-        if (tabBrowse != null) {
-            tabBrowse.setOnClickListener(v -> {
-                // already on Browse
             });
         }
 
@@ -50,8 +65,6 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         // LOGIN / ACCOUNT
-        tabLogin = findViewById(R.id.tabLogin);
-
         tabLogin.setOnClickListener(v -> {
             if (AuthManager.isLoggedIn(this)) {
                 startActivity(new Intent(this, AccountActivity.class));
@@ -60,16 +73,84 @@ public class BrowseActivity extends AppCompatActivity {
             }
         });
 
+        // SEARCH BUTTON
+        btnSearch.setOnClickListener(v -> {
+            String query = etSearch.getText().toString().trim();
+            performNewSearch(query);
+        });
+
         // RecyclerView setup
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewBooks);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        //Books
-        BookRepository repo = new BookRepository();
-        List<Book> books = repo.getTrendingBooks();
-
-        BookAdapter adapter = new BookAdapter(books);
+        recyclerView = findViewById(R.id.recyclerViewBooks);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new BookAdapter(bookList);
         recyclerView.setAdapter(adapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                if (!isLoading && !isLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                            && firstVisibleItemPosition >= 0
+                            && totalItemCount >= maxResults) {
+                        loadBooks();
+                    }
+                }
+            }
+        });
+
+        loadBooks(); // Initial load (trending)
+    }
+
+    private void performNewSearch(String query) {
+        currentQuery = query;
+        startIndex = 0;
+        isLastPage = false;
+        bookList.clear();
+        adapter.notifyDataSetChanged();
+        loadBooks();
+    }
+
+    private void loadBooks() {
+        isLoading = true;
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+        
+        BookRepository repo = new BookRepository();
+        BookRepository.BookCallback callback = new BookRepository.BookCallback() {
+            @Override
+            public void onSuccess(List<Book> books) {
+                isLoading = false;
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+                
+                if (books.isEmpty()) {
+                    isLastPage = true;
+                } else {
+                    int insertStart = bookList.size();
+                    bookList.addAll(books);
+                    adapter.notifyItemRangeInserted(insertStart, books.size());
+                    startIndex += maxResults;
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                isLoading = false;
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+                Toast.makeText(BrowseActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        if (currentQuery.isEmpty()) {
+            repo.getTrendingBooks(startIndex, maxResults, callback);
+        } else {
+            repo.searchBooks(currentQuery, startIndex, maxResults, callback);
+        }
     }
 
     @Override
