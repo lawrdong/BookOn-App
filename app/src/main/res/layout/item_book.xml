@@ -10,9 +10,10 @@
     <ImageView
         android:id="@+id/ivCover"
         android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_height="100dp"
         android:contentDescription="@null"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         android:src="@drawable/ic_book_placeholder" />
 
     <LinearLayout

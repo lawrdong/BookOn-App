@@ -23,4 +23,7 @@
     <string name="browse_screen">Browse Screen</string>
     <string name="community_screen">Community Screen</string>
 
+    <string name="by_author">by %1$s</string>
+    <string name="published_date">Published: %1$s</string>
+
 </resources>
