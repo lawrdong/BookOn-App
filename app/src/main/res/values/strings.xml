@@ -26,4 +26,15 @@
     <string name="by_author">by %1$s</string>
     <string name="published_date">Published: %1$s</string>
 
+    <string name="filter_books">Filter Books</string>
+    <string name="sort_by">Sort By</string>
+    <string name="rating_high_to_low">Rating (High to Low)</string>
+    <string name="rating_low_to_high">Rating (Low to High)</string>
+    <string name="date_newest_to_oldest">Date (Newest to Oldest)</string>
+    <string name="date_oldest_to_newest">Date (Oldest to Newest)</string>
+    <string name="filter_by_category">Filter by Category</string>
+    <string name="all_categories">All Categories</string>
+    <string name="clear_filters">Clear Filters</string>
+    <string name="apply">Apply</string>
+
 </resources>

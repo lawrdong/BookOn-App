@@ -2,6 +2,7 @@ package com.example.bookon;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,6 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+
+import java.util.Locale;
 
 /**
  * Activity for displaying detailed information about a selected book.
@@ -35,6 +38,7 @@ public class BookDetailActivity extends AppCompatActivity {
         TextView tvBookAuthor = findViewById(R.id.tvBookAuthor);
         TextView tvBookDescription = findViewById(R.id.tvBookDescription);
         TextView tvPublishedDate = findViewById(R.id.tvPublishedDate);
+        TextView tvAverageRating = findViewById(R.id.tvAverageRating);
 
         // Action buttons
         Button btnAddToShelf = findViewById(R.id.btnAddToShelf);
@@ -76,6 +80,8 @@ public class BookDetailActivity extends AppCompatActivity {
         String description = intent.getStringExtra("description");
         String thumbnailUrl = intent.getStringExtra("thumbnailUrl");
         String publishedDate = intent.getStringExtra("publishedDate");
+        double averageRating = intent.getDoubleExtra("averageRating", 0.0);
+        int ratingsCount = intent.getIntExtra("ratingsCount", 0);
 
         // Populate UI with book data
         tvBookTitle.setText(title);
@@ -94,6 +100,18 @@ public class BookDetailActivity extends AppCompatActivity {
             tvPublishedDate.setText(getString(R.string.published_date, publishedDate));
         } else {
             tvPublishedDate.setText("");
+        }
+
+        // Display average rating
+        if (averageRating > 0) {
+            tvAverageRating.setVisibility(View.VISIBLE);
+            String ratingText = String.format(Locale.getDefault(), "★ %.1f", averageRating);
+            if (ratingsCount > 0) {
+                ratingText += String.format(Locale.getDefault(), " (%d ratings)", ratingsCount);
+            }
+            tvAverageRating.setText(ratingText);
+        } else {
+            tvAverageRating.setVisibility(View.GONE);
         }
 
         // Load book cover image
