@@ -1,10 +1,13 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bookon.utils.AuthManager;
+import com.example.bookon.R;
 
 public class CommunityActivity extends AppCompatActivity {
 
@@ -35,7 +38,7 @@ public class CommunityActivity extends AppCompatActivity {
         tabLogin = findViewById(R.id.tabLogin);
 
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(this)) {
+            if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
@@ -47,7 +50,7 @@ public class CommunityActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }
 }

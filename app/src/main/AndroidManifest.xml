@@ -14,13 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BookOn">
         <activity
-            android:name=".CommunityActivity"
+            android:name=".ui.activities.CommunityActivity"
             android:exported="false" />
         <activity
-            android:name=".BrowseActivity"
+            android:name=".ui.activities.BrowseActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,11 +28,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".AccountActivity" />
-        <activity android:name=".BookDetailActivity" />
-        <activity android:name=".ShelvesActivity" />
-        <activity android:name=".WriteReviewActivity" />
+        <activity android:name=".ui.activities.LoginActivity" />
+        <activity android:name=".ui.activities.AccountActivity" />
+        <activity android:name=".ui.activities.BookDetailActivity" />
+        <activity android:name=".ui.activities.ShelvesActivity" />
+        <activity android:name=".ui.activities.WriteReviewActivity" />
+        <activity android:name=".ui.activities.RegisterActivity" />
     </application>
 
 </manifest>

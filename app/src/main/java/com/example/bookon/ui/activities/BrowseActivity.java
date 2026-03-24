@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,15 +15,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bookon.utils.AuthManager;
+import com.example.bookon.utils.BookAdapter;
+import com.example.bookon.data.repositories.BookRepository;
+import com.example.bookon.R;
+import com.example.bookon.data.models.Book;
 
 /**
  * Activity for browsing and searching books with filtering and sorting options.
@@ -39,7 +43,7 @@ public class BrowseActivity extends AppCompatActivity {
     private ImageButton btnFilter;
     private List<Book> bookList = new ArrayList<>();
     private List<Book> filteredBookList = new ArrayList<>();
-    
+
     private int startIndex = 0;
     private final int maxResults = 20;
     private boolean isLoading = false;
@@ -140,7 +144,7 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(this)) {
+            if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
@@ -167,7 +171,7 @@ public class BrowseActivity extends AppCompatActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                
+
                 int visibleItemCount = layoutManager.getChildCount();
                 int totalItemCount = layoutManager.getItemCount();
                 int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
@@ -201,7 +205,7 @@ public class BrowseActivity extends AppCompatActivity {
         builder.setPositiveButton(R.string.apply, (dialog, which) -> {
             int newSortId = rgSort.getCheckedRadioButtonId();
             String newCategory = btnCategory.getText().toString();
-            
+
             if (!newCategory.equals(selectedCategory)) {
                 selectedCategory = newCategory;
                 selectedSortId = newSortId;
@@ -225,7 +229,7 @@ public class BrowseActivity extends AppCompatActivity {
 
     private void showCategorySelector(Button btnCategory) {
         List<String> categoriesList = new ArrayList<>(Arrays.asList(bisacCategories));
-        
+
         for (Book book : bookList) {
             if (book.getCategories() != null) {
                 for (String cat : book.getCategories()) {
@@ -236,12 +240,12 @@ public class BrowseActivity extends AppCompatActivity {
                 }
             }
         }
-        
+
         Collections.sort(categoriesList);
-        
+
         categoriesList.remove("All Categories");
         categoriesList.add(0, "All Categories");
-        
+
         String[] categoriesArray = categoriesList.toArray(new String[0]);
         int checkedItem = categoriesList.indexOf(btnCategory.getText().toString().toUpperCase());
         if (checkedItem == -1) checkedItem = 0;
@@ -257,7 +261,7 @@ public class BrowseActivity extends AppCompatActivity {
 
     private void applyFiltersAndSort() {
         List<Book> filtered = new ArrayList<>();
-        
+
         for (Book book : bookList) {
             if (selectedCategory.equals("All Categories")) {
                 filtered.add(book);
@@ -273,7 +277,7 @@ public class BrowseActivity extends AppCompatActivity {
                 if (match) filtered.add(book);
             }
         }
-        
+
         if (selectedSortId == R.id.rbRatingHighLow) {
             Collections.sort(filtered, (b1, b2) -> {
                 Double r1 = b1.getAverageRating() != null ? b1.getAverageRating() : -1.0;
@@ -322,17 +326,17 @@ public class BrowseActivity extends AppCompatActivity {
 
     private void loadBooks() {
         if (isLoading || isLastPage) return;
-        
+
         isLoading = true;
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        
+
         BookRepository repo = new BookRepository();
         BookRepository.BookCallback callback = new BookRepository.BookCallback() {
             @Override
             public void onSuccess(List<Book> books) {
                 isLoading = false;
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                
+
                 if (books.isEmpty()) {
                     if (!selectedCategory.equals("All Categories") && !isInCategoryFallbackMode && startIndex == 0) {
                         isInCategoryFallbackMode = true;
@@ -344,12 +348,12 @@ public class BrowseActivity extends AppCompatActivity {
                     bookList.addAll(books);
                     applyFiltersAndSort();
                     startIndex += maxResults;
-                    
+
                     // If we received fewer books than requested, it might be the end of results
                     if (books.size() < maxResults) {
                         isLastPage = true;
                     }
-                    
+
                     // If filtering resulted in very few items visible, try to load more immediately
                     if (filteredBookList.size() < 5 && !isLastPage) {
                         loadBooks();
@@ -382,7 +386,7 @@ public class BrowseActivity extends AppCompatActivity {
             repo.searchBooks(apiQuery, startIndex, maxResults, callback);
         }
     }
-    
+
     private void searchByCategoryKeyword(BookRepository repo, BookRepository.BookCallback callback) {
         String fallbackQuery = currentQuery.isEmpty() ? selectedCategory : currentQuery + " " + selectedCategory;
         repo.searchBooks(fallbackQuery, startIndex, maxResults, callback);
@@ -392,7 +396,7 @@ public class BrowseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }
 }

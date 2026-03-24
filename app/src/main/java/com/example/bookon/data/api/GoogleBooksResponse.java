@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.data.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;

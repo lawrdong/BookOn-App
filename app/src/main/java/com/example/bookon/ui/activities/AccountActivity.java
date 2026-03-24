@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bookon.utils.AuthManager;
+import com.example.bookon.R;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -43,7 +46,7 @@ public class AccountActivity extends AppCompatActivity {
 
         //login tab
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(this)) {
+            if (AuthManager.isLoggedIn()) {
                 // already on Account
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
@@ -51,7 +54,7 @@ public class AccountActivity extends AppCompatActivity {
         });
 
         btnLogout.setOnClickListener(v -> {
-            AuthManager.logout(AccountActivity.this);
+            AuthManager.logout();
 
             finish();
             overridePendingTransition(0, 0);
@@ -64,11 +67,11 @@ public class AccountActivity extends AppCompatActivity {
 
         // Update login text when returning (Login -> Account) or after logout (Account -> Login)
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
 
         // If user is logged out and somehow opened this page, kick them to Login
-        if (!AuthManager.isLoggedIn(this)) {
+        if (!AuthManager.isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
