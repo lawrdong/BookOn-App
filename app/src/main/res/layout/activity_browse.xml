@@ -108,6 +108,15 @@
             android:text="Search"
             android:textAllCaps="false"
             android:minHeight="40dp" />
+
+        <ImageButton
+            android:id="@+id/btnFilter"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_filter"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Filter Books" />
     </LinearLayout>
 
     <!-- PAGE CONTENT -->

@@ -32,6 +32,12 @@ public class GoogleBooksResponse {
         private String previewLink;
         @SerializedName("publishedDate")
         private String publishedDate;
+        @SerializedName("averageRating")
+        private Double averageRating;
+        @SerializedName("ratingsCount")
+        private Integer ratingsCount;
+        @SerializedName("categories")
+        private List<String> categories;
 
         public String getTitle() { return title; }
         public List<String> getAuthors() { return authors; }
@@ -39,6 +45,9 @@ public class GoogleBooksResponse {
         public ImageLinks getImageLinks() { return imageLinks; }
         public String getPreviewLink() { return previewLink; }
         public String getPublishedDate() { return publishedDate; }
+        public Double getAverageRating() { return averageRating; }
+        public Integer getRatingsCount() { return ratingsCount; }
+        public List<String> getCategories() { return categories; }
     }
 
     public static class ImageLinks {

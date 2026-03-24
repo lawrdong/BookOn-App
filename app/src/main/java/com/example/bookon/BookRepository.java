@@ -22,7 +22,7 @@ public class BookRepository {
      * Google Books API Key
      * You can ask me for it (Kevin) or you can make your own key if that's easier for you
      */
-    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String API_KEY = "api key goes here";
 
     // Queries used for random initial loading
     private final String[] randomQueries = {
@@ -61,6 +61,8 @@ public class BookRepository {
                     List<Book> books = mapResponseToBooks(response.body());
                     // Shuffle for added variety
                     Collections.shuffle(books);
+                    // Sort so books with ratings show up first by default
+                    sortBooksByRatingDescending(books);
                     callback.onSuccess(books);
                 } else {
                     callback.onError(new Exception("Failed to fetch books"));
@@ -83,6 +85,8 @@ public class BookRepository {
             public void onResponse(Call<GoogleBooksResponse> call, Response<GoogleBooksResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Book> books = mapResponseToBooks(response.body());
+                    // Sort so books with ratings show up first by default
+                    sortBooksByRatingDescending(books);
                     callback.onSuccess(books);
                 } else {
                     callback.onError(new Exception("Failed to search books"));
@@ -93,6 +97,23 @@ public class BookRepository {
             public void onFailure(Call<GoogleBooksResponse> call, Throwable t) {
                 callback.onError(t);
             }
+        });
+    }
+
+    /**
+     * Helper to sort books such that those with higher ratings appear first.
+     */
+    private void sortBooksByRatingDescending(List<Book> books) {
+        Collections.sort(books, (b1, b2) -> {
+            Double r1 = b1.getAverageRating();
+            Double r2 = b2.getAverageRating();
+            
+            if (r1 != null && r2 == null) return -1;
+            if (r1 == null && r2 != null) return 1;
+            if (r1 != null && r2 != null) {
+                return r2.compareTo(r1);
+            }
+            return 0;
         });
     }
 
@@ -116,7 +137,10 @@ public class BookRepository {
                         info.getDescription(),
                         thumbnail,
                         info.getPreviewLink(),
-                        info.getPublishedDate()
+                        info.getPublishedDate(),
+                        info.getAverageRating(),
+                        info.getRatingsCount(),
+                        info.getCategories()
                 ));
             }
         }
