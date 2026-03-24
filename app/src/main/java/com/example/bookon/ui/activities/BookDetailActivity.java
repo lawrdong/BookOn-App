@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,12 +11,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.bookon.utils.AuthManager;
+import com.example.bookon.R;
 
 import java.util.Locale;
 
-/**
- * Activity for displaying detailed information about a selected book.
- */
 public class BookDetailActivity extends AppCompatActivity {
 
     private TextView tabLogin;
@@ -45,7 +44,7 @@ public class BookDetailActivity extends AppCompatActivity {
         Button btnWriteReview = findViewById(R.id.btnWriteReview);
         Button btnFavorite = findViewById(R.id.btnFavorite);
 
-        // nav click listeners
+        // Nav click listeners
         tabHome.setOnClickListener(v -> {
             Intent intent = new Intent(BookDetailActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -64,16 +63,15 @@ public class BookDetailActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Login Tab
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(this)) {
+            if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
             }
         });
 
-        // get book data from Browse
+        // Get book data from Browse
         Intent intent = getIntent();
         String title = intent.getStringExtra("title");
         String authors = intent.getStringExtra("authors");
@@ -85,17 +83,17 @@ public class BookDetailActivity extends AppCompatActivity {
 
         // Populate UI with book data
         tvBookTitle.setText(title);
-        
+
         if (authors != null) {
             tvBookAuthor.setText(getString(R.string.by_author, authors));
         }
-        
+
         if (description != null && !description.isEmpty()) {
             tvBookDescription.setText(description);
         } else {
             tvBookDescription.setText("No description available");
         }
-        
+
         if (publishedDate != null) {
             tvPublishedDate.setText(getString(R.string.published_date, publishedDate));
         } else {
@@ -122,9 +120,8 @@ public class BookDetailActivity extends AppCompatActivity {
                     .into(ivBookCover);
         }
 
-        // add to Shelf
         btnAddToShelf.setOnClickListener(v -> {
-            if (!AuthManager.isLoggedIn(this)) {
+            if (!AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
                 Intent shelfIntent = new Intent(this, ShelvesActivity.class);
@@ -133,9 +130,8 @@ public class BookDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Write a Review
         btnWriteReview.setOnClickListener(v -> {
-            if (!AuthManager.isLoggedIn(this)) {
+            if (!AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
                 Intent reviewIntent = new Intent(this, WriteReviewActivity.class);
@@ -144,9 +140,8 @@ public class BookDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Add to Favorites
         btnFavorite.setOnClickListener(v -> {
-            if (!AuthManager.isLoggedIn(this)) {
+            if (!AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
                 Toast.makeText(this, "Favorite feature W.I.P", Toast.LENGTH_SHORT).show();
@@ -157,8 +152,9 @@ public class BookDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // ✅ Fixed: removed (this)
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }
 }

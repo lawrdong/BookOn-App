@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.utils;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.bookon.R;
+import com.example.bookon.data.models.Shelf;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.bookon.R;
+import com.example.bookon.data.models.Shelf;
+import com.example.bookon.utils.AuthManager;
+import com.example.bookon.utils.ShelfAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +54,7 @@ public class ShelvesActivity extends AppCompatActivity {
 
         //Login Tab
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(this)) {
+            if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
@@ -79,7 +84,7 @@ public class ShelvesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }
 }

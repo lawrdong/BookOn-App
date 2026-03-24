@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.data.models;
 
 public class Shelf {
 

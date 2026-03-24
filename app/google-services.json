@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "659639453250",
+    "project_id": "bookon-6dc4d",
+    "storage_bucket": "bookon-6dc4d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659639453250:android:66c4e0bc612b9b7838cfdb",
+        "android_client_info": {
+          "package_name": "com.example.bookon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXJ8iJv_aVAeEvytMlPUyjEaeAkjIpe1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

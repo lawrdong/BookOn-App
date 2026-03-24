@@ -1,4 +1,8 @@
-package com.example.bookon;
+package com.example.bookon.data.repositories;
+
+import com.example.bookon.data.api.GoogleBooksApi;
+import com.example.bookon.data.api.GoogleBooksResponse;
+import com.example.bookon.data.models.Book;
 
 import java.util.ArrayList;
 import java.util.Collections;

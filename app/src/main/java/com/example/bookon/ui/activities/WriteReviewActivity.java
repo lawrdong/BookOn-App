@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bookon.R;
+import com.example.bookon.data.api.BookOnApi;
+import com.example.bookon.utils.AuthManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,7 +34,7 @@ public class WriteReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_write_review);
 
         // Check login status first
-        if (!AuthManager.isLoggedIn(this)) {
+        if (!AuthManager.isLoggedIn()) {
             Toast.makeText(this, "Please login to write a review", Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
@@ -80,7 +84,7 @@ public class WriteReviewActivity extends AppCompatActivity {
     }
 
     private void submitReviewToBackend(int rating, String reviewText) {
-        int userId = AuthManager.getUserId(this);
+        String userId = AuthManager.getUserId();
 
         // Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -125,7 +129,7 @@ public class WriteReviewActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }
 }

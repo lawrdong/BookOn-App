@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.data.api;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

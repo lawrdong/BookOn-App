@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bookon.utils.AuthManager;
+import com.example.bookon.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,18 +27,18 @@ public class MainActivity extends AppCompatActivity {
         btnStartExploring.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, BrowseActivity.class))
         );
-        
-        //Browse Tab
+
+        // Browse Tab
         tabBrowse.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, BrowseActivity.class)));
 
-        //Community Tab
+        // Community Tab
         tabCommunity.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, CommunityActivity.class)));
 
-        //Login Tab
+        // Login Tab - no more passing "this" to AuthManager
         tabLogin.setOnClickListener(v -> {
-            if (AuthManager.isLoggedIn(this)) {
+            if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
@@ -47,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
-            tabLogin.setText(AuthManager.isLoggedIn(this) ? "Account" : "Login");
+            // No more passing "this" to AuthManager
+            tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }
 }

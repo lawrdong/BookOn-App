@@ -16,7 +16,6 @@
         android:paddingHorizontal="12dp">
 
         <TextView
-            android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
@@ -33,13 +32,13 @@
         android:padding="18dp">
 
         <TextView
-            android:id="@+id/tabLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:textColor="#8A8A8A" />
+            android:text="Create Account"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"/>
 
-        <!-- ✅ Added id -->
         <EditText
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
@@ -48,7 +47,6 @@
             android:hint="Email"
             android:inputType="textEmailAddress"/>
 
-        <!-- ✅ Added id -->
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
@@ -57,23 +55,29 @@
             android:hint="Password"
             android:inputType="textPassword"/>
 
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"/>
+
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Login" />
+            android:text="Register" />
 
-        <!-- ✅ Added register link -->
         <TextView
-            android:id="@+id/tvRegister"
+            android:id="@+id/tvLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Don't have an account? Register"
+            android:text="Already have an account? Login"
             android:textColor="@color/purple"/>
 
-        <!-- ✅ Added progress bar -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"

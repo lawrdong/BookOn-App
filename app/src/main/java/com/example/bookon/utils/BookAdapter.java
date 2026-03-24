@@ -1,4 +1,4 @@
-package com.example.bookon;
+package com.example.bookon.utils;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.bookon.R;
+import com.example.bookon.data.models.Book;
+import com.example.bookon.ui.activities.BookDetailActivity;
 
 import java.util.List;
 import java.util.Locale;
