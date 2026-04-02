@@ -1,5 +1,6 @@
 package com.example.bookon.utils;
 
+import com.example.bookon.ui.activities.BookDetailActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -12,7 +13,7 @@ public class AuthManager {
 
     // Returns true if a user is currently logged in
     public static boolean isLoggedIn() {
-        return getAuth().getCurrentUser() != null;
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
     }
 
     // Returns the current Firebase user object (or null if not logged in)

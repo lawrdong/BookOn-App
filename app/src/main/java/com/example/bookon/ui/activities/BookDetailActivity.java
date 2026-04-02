@@ -6,11 +6,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.bookon.FavoritesManager;
 import com.example.bookon.utils.AuthManager;
 import com.example.bookon.R;
 
@@ -160,7 +160,7 @@ public class BookDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // ✅ Fixed: removed (this)
+        // Fixed: removed (this)
         if (tabLogin != null) {
             tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }

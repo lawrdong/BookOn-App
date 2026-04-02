@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.glide)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
