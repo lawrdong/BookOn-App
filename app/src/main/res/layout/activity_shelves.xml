@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/light_gray"
-    android:fitsSystemWindows="true">
+    android:background="@color/light_gray">
 
     <!-- NAV BAR -->
     <LinearLayout
@@ -16,7 +15,6 @@
         android:paddingHorizontal="12dp"
         android:background="@color/white">
 
-        <!-- App name -->
         <TextView
             android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
@@ -26,7 +24,6 @@
             android:textStyle="bold"
             android:textColor="@color/purple" />
 
-        <!-- Tabs  -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -52,9 +49,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="@string/tab_browse"
-                android:background="@drawable/bg_tab_selected"
-                android:textStyle="bold"
-                android:textColor="@color/purple" />
+                android:textColor="#8A8A8A" />
 
             <TextView
                 android:id="@+id/tabCommunity"
@@ -67,7 +62,6 @@
                 android:textColor="#8A8A8A" />
         </LinearLayout>
 
-        <!-- Login/Account -->
         <TextView
             android:id="@+id/tabLogin"
             android:layout_width="wrap_content"
@@ -89,19 +83,27 @@
             android:id="@+id/tvShelvesTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select a Shelf"
-            android:textSize="26sp"
+            android:text="My Shelves"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="#111111" />
 
         <TextView
-            android:id="@+id/tvSelectedBookTitle"
+            android:id="@+id/tvShelvesSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Book Title"
-            android:textSize="16sp"
+            android:layout_marginTop="6dp"
+            android:text="Organize your books by mood, genre, and reading goals."
+            android:textSize="15sp"
             android:textColor="#6B6B6B" />
+
+        <Button
+            android:id="@+id/btnCreateShelf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Create Shelf"
+            android:textAllCaps="false" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

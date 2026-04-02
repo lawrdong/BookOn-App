@@ -36,5 +36,6 @@
     <string name="all_categories">All Categories</string>
     <string name="clear_filters">Clear Filters</string>
     <string name="apply">Apply</string>
+    <string name="shelf_title">Shelf Title</string>
 
 </resources>

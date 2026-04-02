@@ -37,8 +37,9 @@ public class ShelfAdapter extends RecyclerView.Adapter<ShelfAdapter.ShelfViewHol
     public void onBindViewHolder(ShelfViewHolder holder, int position) {
         Shelf shelf = shelves.get(position);
 
-        holder.tvShelfName.setText(shelf.getName());
+        holder.tvShelfTitle.setText(shelf.getTitle());
         holder.tvShelfDescription.setText(shelf.getDescription());
+        holder.tvShelfCount.setText(shelf.getBookCount() + " books");
 
         holder.itemView.setOnClickListener(v -> listener.onShelfClick(shelf));
     }
@@ -50,12 +51,13 @@ public class ShelfAdapter extends RecyclerView.Adapter<ShelfAdapter.ShelfViewHol
 
     static class ShelfViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvShelfName, tvShelfDescription;
+        TextView tvShelfTitle, tvShelfDescription, tvShelfCount;
 
         public ShelfViewHolder(View itemView) {
             super(itemView);
-            tvShelfName = itemView.findViewById(R.id.tvShelfName);
+            tvShelfTitle = itemView.findViewById(R.id.tvShelfTitle);
             tvShelfDescription = itemView.findViewById(R.id.tvShelfDescription);
+            tvShelfCount = itemView.findViewById(R.id.tvShelfCount);
         }
     }
 }

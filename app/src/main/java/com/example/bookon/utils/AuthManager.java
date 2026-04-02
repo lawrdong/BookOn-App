@@ -1,6 +1,5 @@
 package com.example.bookon.utils;
 
-import com.example.bookon.ui.activities.BookDetailActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
