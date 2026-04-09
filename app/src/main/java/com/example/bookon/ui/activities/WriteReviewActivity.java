@@ -94,12 +94,12 @@ public class WriteReviewActivity extends AppCompatActivity {
 
         BookOnApi api = retrofit.create(BookOnApi.class);
 
-        // Prepare the request
+        // Prepare request
         BookOnApi.ReviewRequest request = new BookOnApi.ReviewRequest(
                 userId, bookId, bookTitle, rating, reviewText
         );
 
-        // Send the request
+        // Send request
         api.postReview(request).enqueue(new Callback<BookOnApi.SimpleResponse>() {
             @Override
             public void onResponse(Call<BookOnApi.SimpleResponse> call, Response<BookOnApi.SimpleResponse> response) {
