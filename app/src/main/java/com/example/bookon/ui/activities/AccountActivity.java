@@ -23,7 +23,7 @@ public class AccountActivity extends AppCompatActivity {
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
-        Button btnLogout = findViewById(R.id.btnLogout);
+        Button btnAccountCreatePost = findViewById(R.id.btnAccountCreatePost);
 
         //nav click listeners
         tabHome.setOnClickListener(v -> {
@@ -53,12 +53,8 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
 
-        btnLogout.setOnClickListener(v -> {
-            AuthManager.logout();
-
-            finish();
-            overridePendingTransition(0, 0);
-        });
+        btnAccountCreatePost.setOnClickListener(v ->
+                startActivity(new Intent(this, ShelvesActivity.class)));
     }
 
     @Override
@@ -70,7 +66,7 @@ public class AccountActivity extends AppCompatActivity {
             tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
 
-        // If user is logged out and somehow opened this page, kick them to Login
+        // If user is logged out, kick them to Login
         if (!AuthManager.isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();

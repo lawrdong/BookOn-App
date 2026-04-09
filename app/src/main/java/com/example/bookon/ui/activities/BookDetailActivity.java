@@ -11,27 +11,30 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.bookon.FavoritesManager;
-import com.example.bookon.utils.AuthManager;
 import com.example.bookon.R;
+import com.example.bookon.utils.AuthManager;
 
 import java.util.Locale;
 
 public class BookDetailActivity extends AppCompatActivity {
 
     private TextView tabLogin;
+    private static final String[] MOCK_REVIEW_TITLES = {
+            "The Midnight Library",
+            "Project Hail Mary",
+            "Frankenstein, Or, The Modern Prometheus"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
 
-        // Navigation setup
         TextView tabHome = findViewById(R.id.tabHome);
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
 
-        // Book details UI elements
         ImageView ivBookCover = findViewById(R.id.ivBookCover);
         TextView tvBookTitle = findViewById(R.id.tvBookTitle);
         TextView tvBookAuthor = findViewById(R.id.tvBookAuthor);
@@ -39,30 +42,14 @@ public class BookDetailActivity extends AppCompatActivity {
         TextView tvPublishedDate = findViewById(R.id.tvPublishedDate);
         TextView tvAverageRating = findViewById(R.id.tvAverageRating);
 
-        // Action buttons
         Button btnAddToShelf = findViewById(R.id.btnAddToShelf);
         Button btnWriteReview = findViewById(R.id.btnWriteReview);
+        Button btnCheckReviews = findViewById(R.id.btnCheckReviews);
         Button btnFavorite = findViewById(R.id.btnFavorite);
 
-        // Nav click listeners
-        tabHome.setOnClickListener(v -> {
-            Intent intent = new Intent(BookDetailActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-        });
-
-        tabBrowse.setOnClickListener(v -> {
-            Intent intent = new Intent(BookDetailActivity.this, BrowseActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-        });
-
-        tabCommunity.setOnClickListener(v -> {
-            Intent intent = new Intent(BookDetailActivity.this, CommunityActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-        });
-
+        tabHome.setOnClickListener(v -> navigateTo(MainActivity.class));
+        tabBrowse.setOnClickListener(v -> navigateTo(BrowseActivity.class));
+        tabCommunity.setOnClickListener(v -> navigateTo(CommunityActivity.class));
         tabLogin.setOnClickListener(v -> {
             if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
@@ -71,7 +58,6 @@ public class BookDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Get book data from Browse
         Intent intent = getIntent();
         String title = intent.getStringExtra("title");
         String authors = intent.getStringExtra("authors");
@@ -81,7 +67,6 @@ public class BookDetailActivity extends AppCompatActivity {
         double averageRating = intent.getDoubleExtra("averageRating", 0.0);
         int ratingsCount = intent.getIntExtra("ratingsCount", 0);
 
-        // Populate UI with book data
         tvBookTitle.setText(title);
 
         if (authors != null) {
@@ -100,7 +85,6 @@ public class BookDetailActivity extends AppCompatActivity {
             tvPublishedDate.setText("");
         }
 
-        // Display average rating
         if (averageRating > 0) {
             tvAverageRating.setVisibility(View.VISIBLE);
             String ratingText = String.format(Locale.getDefault(), "★ %.1f", averageRating);
@@ -112,7 +96,6 @@ public class BookDetailActivity extends AppCompatActivity {
             tvAverageRating.setVisibility(View.GONE);
         }
 
-        // Load book cover image
         if (thumbnailUrl != null && ivBookCover != null) {
             Glide.with(this)
                     .load(thumbnailUrl)
@@ -135,9 +118,22 @@ public class BookDetailActivity extends AppCompatActivity {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
                 Intent reviewIntent = new Intent(this, WriteReviewActivity.class);
+                reviewIntent.putExtra("id", intent.getStringExtra("id"));
                 reviewIntent.putExtra("title", title);
                 startActivity(reviewIntent);
             }
+        });
+
+        btnCheckReviews.setOnClickListener(v -> {
+            Intent reviewsIntent = new Intent(this, BookReviewsActivity.class);
+            reviewsIntent.putExtra("id", intent.getStringExtra("id"));
+            reviewsIntent.putExtra("title", title);
+            reviewsIntent.putExtra("authors", authors);
+            reviewsIntent.putExtra("thumbnailUrl", thumbnailUrl);
+            reviewsIntent.putExtra("averageRating", averageRating);
+            reviewsIntent.putExtra("ratingsCount", ratingsCount);
+            reviewsIntent.putExtra("hasMockReviews", hasMockReviewsForTitle(title));
+            startActivity(reviewsIntent);
         });
 
         btnFavorite.setOnClickListener(v -> {
@@ -157,10 +153,27 @@ public class BookDetailActivity extends AppCompatActivity {
         });
     }
 
+    private void navigateTo(Class<?> cls) {
+        Intent intent = new Intent(this, cls);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
+    private boolean hasMockReviewsForTitle(String title) {
+        if (title == null) {
+            return false;
+        }
+        for (String reviewTitle : MOCK_REVIEW_TITLES) {
+            if (reviewTitle.equalsIgnoreCase(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        // Fixed: removed (this)
         if (tabLogin != null) {
             tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }

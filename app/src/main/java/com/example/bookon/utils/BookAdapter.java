@@ -22,10 +22,20 @@ import java.util.Locale;
  */
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
+    public interface OnBookClickListener {
+        void onBookClick(Book book);
+    }
+
     private final List<Book> books;
+    private final OnBookClickListener onBookClickListener;
 
     public BookAdapter(List<Book> books) {
+        this(books, null);
+    }
+
+    public BookAdapter(List<Book> books, OnBookClickListener onBookClickListener) {
         this.books = books;
+        this.onBookClickListener = onBookClickListener;
     }
 
     @Override
@@ -72,6 +82,10 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
         // Open details on click
         holder.itemView.setOnClickListener(v -> {
+            if (onBookClickListener != null) {
+                onBookClickListener.onBookClick(book);
+                return;
+            }
             Intent intent = new Intent(v.getContext(), BookDetailActivity.class);
             intent.putExtra("id", book.getId());
             intent.putExtra("title", book.getTitle());
