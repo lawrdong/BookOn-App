@@ -22,6 +22,20 @@
 
     <string name="browse_screen">Browse Screen</string>
     <string name="community_screen">Community Screen</string>
+    <string name="browse_heading">Browse Books</string>
+    <string name="browse_subheading">Discover your next great read from our collection</string>
+    <string name="community_heading">Community Feed</string>
+    <string name="community_subheading">See what fellow readers are discovering and sharing</string>
+    <string name="login_heading">Welcome back to BookOn</string>
+    <string name="login_subheading">Sign in to save books, create shelves, and join the reading community.</string>
+    <string name="register_heading">Create your BookOn account</string>
+    <string name="register_subheading">Start organizing your reading life with shelves, favorites, and reviews.</string>
+    <string name="account_heading">Reader’s Profile</string>
+    <string name="account_subheading">Track your shelves, saved books, and community activity in one place.</string>
+    <string name="shelves_heading">Create a New Bookshelf</string>
+    <string name="shelves_subheading">Organize your collection by genre, mood, or reading goals.</string>
+    <string name="review_heading">Write a Review</string>
+    <string name="review_subheading">Share what stood out so other readers know what to expect.</string>
 
     <string name="by_author">by %1$s</string>
     <string name="published_date">Published: %1$s</string>
@@ -37,5 +51,9 @@
     <string name="clear_filters">Clear Filters</string>
     <string name="apply">Apply</string>
     <string name="shelf_title">Shelf Title</string>
+    <string name="search_books_hint">Search for a title, author, or vibe</string>
+    <string name="filter_books_content">Filter books</string>
+    <string name="book_detail_about">About this book</string>
+    <string name="book_detail_actions">Quick actions</string>
 
 </resources>

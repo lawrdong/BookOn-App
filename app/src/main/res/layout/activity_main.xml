@@ -3,30 +3,27 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/light_gray"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-    <!-- NAV BAR -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal"
+        android:background="@color/surface"
         android:gravity="center_vertical"
-        android:paddingHorizontal="12dp"
-        android:background="@color/white">
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp">
 
-        <!-- App name -->
         <TextView
             android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
+            android:textColor="@color/brand"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/purple" />
+            android:textStyle="bold" />
 
-        <!-- Tabs  -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,12 +36,12 @@
                 android:id="@+id/tabHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_tab_selected"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="@string/tab_home"
-                android:background="@drawable/bg_tab_selected"
-                android:textStyle="bold"
-                android:textColor="@color/purple" />
+                android:textColor="@color/brand"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tabBrowse"
@@ -54,7 +51,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="@string/tab_browse"
-                android:textColor="#8A8A8A" />
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/tabCommunity"
@@ -64,21 +61,19 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
                 android:text="@string/tab_community"
-                android:textColor="#8A8A8A" />
+                android:textColor="@color/text_secondary" />
         </LinearLayout>
 
-        <!-- Login/Account -->
         <TextView
             android:id="@+id/tabLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:textColor="#111111"
             android:paddingHorizontal="10dp"
-            android:paddingVertical="6dp" />
+            android:paddingVertical="6dp"
+            android:text="@string/login"
+            android:textColor="#111111" />
     </LinearLayout>
 
-    <!-- CONTENT -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -90,12 +85,11 @@
             android:orientation="vertical"
             android:padding="15dp">
 
-            <!-- TOP CARD -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:background="@drawable/bg_hero_gradient"
+                android:orientation="vertical"
                 android:padding="18dp">
 
                 <TextView
@@ -103,167 +97,36 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/welcome_title"
+                    android:textColor="@color/white"
                     android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvHeroDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="10dp"
+                    android:lineSpacingExtra="2dp"
                     android:text="@string/welcome_desc"
-                    android:textColor="#F3EFFF" />
+                    android:textColor="#F3EFFF"
+                    android:textSize="15sp" />
 
-                <Button
-                    android:id="@+id/btnStartExploring"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/start_exploring"
-                    android:textAllCaps="false"
-                    android:backgroundTint="@color/white"
-                    android:textColor="@color/purple" />
-            </LinearLayout>
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-            <!-- CARD: YOUR LIBRARY -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@color/white"
-                android:padding="14dp">
-
-                <LinearLayout
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:background="@color/purple_light"
-                    android:gravity="center">
-
-                    <TextView
+                    <Button
+                        android:id="@+id/btnStartExploring"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📚"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/your_library"
-                        android:textSize="12sp"
-                        android:textColor="#6B6B6B" />
-
-                    <TextView
-                        android:id="@+id/tvLibraryCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero_books"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#111111" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- CARD: BOOKS RATED -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@color/white"
-                android:padding="14dp">
-
-                <LinearLayout
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:background="#FFF3D6"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/books_rated"
-                        android:textSize="12sp"
-                        android:textColor="#6B6B6B" />
-
-                    <TextView
-                        android:id="@+id/tvRatingsCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero_ratings"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#111111" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- CARD: COMMUNITY -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@color/white"
-                android:padding="14dp">
-
-                <LinearLayout
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:background="#DFF7E7"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="👥"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/community"
-                        android:textSize="12sp"
-                        android:textColor="#6B6B6B" />
-
-                    <TextView
-                        android:id="@+id/tvCommunityCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero_members"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#111111" />
+                        android:layout_height="48dp"
+                        android:backgroundTint="@color/white"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/start_exploring"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_dark" />
                 </LinearLayout>
             </LinearLayout>
 

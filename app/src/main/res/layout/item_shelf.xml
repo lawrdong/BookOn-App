@@ -3,34 +3,49 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_surface_card"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/white">
+    android:padding="18dp">
 
     <TextView
         android:id="@+id/tvShelfTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Shelf Title"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#111111" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvShelfDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:text="Shelf description"
-        android:textSize="14sp"
-        android:textColor="#6B6B6B" />
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_chip"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
+        android:text="Shelf Visibility Status Here"
+        android:textColor="@color/brand"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/tvShelfCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_chip"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
         android:text="0 books"
+        android:textColor="@color/brand"
         android:textSize="13sp"
-        android:textColor="@color/purple" />
+        android:textStyle="bold" />
 </LinearLayout>
