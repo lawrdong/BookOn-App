@@ -31,8 +31,10 @@
         <activity android:name=".ui.activities.LoginActivity" />
         <activity android:name=".ui.activities.AccountActivity" />
         <activity android:name=".ui.activities.BookDetailActivity" />
+        <activity android:name=".ui.activities.BookReviewsActivity" />
         <activity android:name=".ui.activities.ShelvesActivity" />
         <activity android:name=".ui.activities.WriteReviewActivity" />
+        <activity android:name=".ui.activities.CreatePostActivity" />
         <activity android:name=".ui.activities.RegisterActivity" />
     </application>
 
