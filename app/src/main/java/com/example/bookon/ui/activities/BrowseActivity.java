@@ -35,6 +35,8 @@ import com.example.bookon.data.models.Book;
 public class BrowseActivity extends AppCompatActivity {
 
     private TextView tabLogin;
+    private TextView tvBrowsePickerBanner;
+    private boolean selectForPost;
     private RecyclerView recyclerView;
     private BookAdapter adapter;
     private ProgressBar progressBar;
@@ -121,10 +123,16 @@ public class BrowseActivity extends AppCompatActivity {
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
+        tvBrowsePickerBanner = findViewById(R.id.tvBrowsePickerBanner);
         progressBar = findViewById(R.id.progressBar);
         etSearch = findViewById(R.id.etSearch);
         btnSearch = findViewById(R.id.btnSearch);
         btnFilter = findViewById(R.id.btnFilter);
+        selectForPost = getIntent().getBooleanExtra("selectForPost", false);
+
+        if (tvBrowsePickerBanner != null) {
+            tvBrowsePickerBanner.setVisibility(selectForPost ? View.VISIBLE : View.GONE);
+        }
 
         // Navigation
         if (tabHome != null) {
@@ -164,7 +172,17 @@ public class BrowseActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewBooks);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new BookAdapter(filteredBookList);
+        adapter = new BookAdapter(filteredBookList, book -> {
+            if (selectForPost) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("id", book.getId());
+                resultIntent.putExtra("title", book.getTitle());
+                resultIntent.putExtra("authors", book.getAuthors());
+                resultIntent.putExtra("thumbnailUrl", book.getThumbnailUrl());
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
