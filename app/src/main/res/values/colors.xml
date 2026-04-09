@@ -2,7 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="light_gray">#FBF7F7</color>
+    <color name="light_gray">#F7F8FC</color>
 
     <color name="purple">#6A35FF</color>
     <color name="purple_dark">#5B2EFF</color>
@@ -10,5 +10,15 @@
 
     <color name="text_primary">#111111</color>
     <color name="text_secondary">#6B6B6B</color>
-    <color name="border_light">#EFEFEF</color>
+    <color name="border_light">#E8EAF2</color>
+
+    <color name="surface">#FFFFFFFF</color>
+    <color name="surface_alt">#F7F8FF</color>
+    <color name="brand">#6A35FF</color>
+    <color name="brand_dark">#5B2EFF</color>
+    <color name="brand_soft">#DCCFFF</color>
+    <color name="brand_tint">#F1ECFF</color>
+    <color name="accent_gold">#F4B400</color>
+    <color name="accent_green">#34A853</color>
+    <color name="accent_rose">#EA4335</color>
 </resources>

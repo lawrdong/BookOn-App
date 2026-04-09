@@ -4,6 +4,10 @@
     <style name="Base.Theme.BookOn" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- (possibly temporary) Disable activity animations -->
         <item name="android:windowAnimationStyle">@style/Animation_None</item>
+        <item name="colorPrimary">@color/brand</item>
+        <item name="colorPrimaryVariant">@color/brand_dark</item>
+        <item name="colorSecondary">@color/accent_gold</item>
+        <item name="android:statusBarColor">@color/brand_dark</item>
     </style>
 
     <style name="Theme.BookOn" parent="Base.Theme.BookOn" />
@@ -17,4 +21,3 @@
     </style>
 
 </resources>
-
