@@ -10,6 +10,7 @@ public interface GoogleBooksApi {
         @Query("q") String query,
         @Query("key") String apiKey,
         @Query("startIndex") int startIndex,
-        @Query("maxResults") int maxResults
+        @Query("maxResults") int maxResults,
+        @Query("orderBy") String orderBy
     );
 }

@@ -69,7 +69,7 @@ public class LibraryActivity extends AppCompatActivity {
 
         BookRepository repo = new BookRepository();
 
-        repo.getTrendingBooks(0, 20, new BookRepository.BookCallback() {
+        repo.getTrendingBooks(0, 20, "relevance", new BookRepository.BookCallback() {
             @Override
             public void onSuccess(List<Book> allBooks) {
                 Set<String> favoriteIds = FavoritesManager.getFavoriteIds(LibraryActivity.this);

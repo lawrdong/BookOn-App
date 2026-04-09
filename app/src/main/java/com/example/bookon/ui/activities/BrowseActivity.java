@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -51,8 +52,8 @@ public class BrowseActivity extends AppCompatActivity {
     private boolean isInCategoryFallbackMode = false;
     private String currentQuery = "";
 
-    private int selectedSortId = R.id.rbRatingHighLow;
     private String selectedCategory = "All Categories";
+    private String selectedSort = "relevance";
 
     // Standard BISAC Top-Level Categories
     private final String[] bisacCategories = {
@@ -195,7 +196,11 @@ public class BrowseActivity extends AppCompatActivity {
         builder.setView(dialogView);
 
         RadioGroup rgSort = dialogView.findViewById(R.id.rgSort);
-        rgSort.check(selectedSortId);
+        if (selectedSort.equals("newest")) {
+            rgSort.check(R.id.rbNewest);
+        } else {
+            rgSort.check(R.id.rbRelevance);
+        }
 
         Button btnCategory = dialogView.findViewById(R.id.btnCategory);
         btnCategory.setText(selectedCategory);
@@ -203,22 +208,19 @@ public class BrowseActivity extends AppCompatActivity {
 
         builder.setTitle(R.string.filter_books);
         builder.setPositiveButton(R.string.apply, (dialog, which) -> {
-            int newSortId = rgSort.getCheckedRadioButtonId();
             String newCategory = btnCategory.getText().toString();
+            String newSort = (rgSort.getCheckedRadioButtonId() == R.id.rbNewest) ? "newest" : "relevance";
 
-            if (!newCategory.equals(selectedCategory)) {
+            if (!newCategory.equals(selectedCategory) || !newSort.equals(selectedSort)) {
                 selectedCategory = newCategory;
-                selectedSortId = newSortId;
+                selectedSort = newSort;
                 resetSearchAndReload();
-            } else {
-                selectedSortId = newSortId;
-                applyFiltersAndSort();
             }
         });
         builder.setNeutralButton(R.string.clear_filters, (dialog, which) -> {
-            if (selectedSortId != R.id.rbRatingHighLow || !selectedCategory.equals("All Categories")) {
-                selectedSortId = R.id.rbRatingHighLow;
+            if (!selectedCategory.equals("All Categories") || !selectedSort.equals("relevance")) {
                 selectedCategory = "All Categories";
+                selectedSort = "relevance";
                 resetSearchAndReload();
             }
         });
@@ -259,56 +261,6 @@ public class BrowseActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void applyFiltersAndSort() {
-        List<Book> filtered = new ArrayList<>();
-
-        for (Book book : bookList) {
-            if (selectedCategory.equals("All Categories")) {
-                filtered.add(book);
-            } else if (book.getCategories() != null) {
-                boolean match = false;
-                String lowerCategory = selectedCategory.toLowerCase();
-                for (String cat : book.getCategories()) {
-                    if (cat.toLowerCase().contains(lowerCategory)) {
-                        match = true;
-                        break;
-                    }
-                }
-                if (match) filtered.add(book);
-            }
-        }
-
-        if (selectedSortId == R.id.rbRatingHighLow) {
-            Collections.sort(filtered, (b1, b2) -> {
-                Double r1 = b1.getAverageRating() != null ? b1.getAverageRating() : -1.0;
-                Double r2 = b2.getAverageRating() != null ? b2.getAverageRating() : -1.0;
-                return r2.compareTo(r1);
-            });
-        } else if (selectedSortId == R.id.rbRatingLowHigh) {
-            Collections.sort(filtered, (b1, b2) -> {
-                Double r1 = b1.getAverageRating() != null ? b1.getAverageRating() : 10.0;
-                Double r2 = b2.getAverageRating() != null ? b2.getAverageRating() : 10.0;
-                return r1.compareTo(r2);
-            });
-        } else if (selectedSortId == R.id.rbDateNewest) {
-            Collections.sort(filtered, (b1, b2) -> {
-                String d1 = b1.getPublishedDate() != null ? b1.getPublishedDate() : "";
-                String d2 = b2.getPublishedDate() != null ? b2.getPublishedDate() : "";
-                return d2.compareTo(d1);
-            });
-        } else if (selectedSortId == R.id.rbDateOldest) {
-            Collections.sort(filtered, (b1, b2) -> {
-                String d1 = b1.getPublishedDate() != null ? b1.getPublishedDate() : "9999";
-                String d2 = b2.getPublishedDate() != null ? b2.getPublishedDate() : "9999";
-                return d1.compareTo(d2);
-            });
-        }
-
-        filteredBookList.clear();
-        filteredBookList.addAll(filtered);
-        adapter.notifyDataSetChanged();
-    }
-
     private void performNewSearch(String query) {
         currentQuery = query;
         resetSearchAndReload();
@@ -345,16 +297,53 @@ public class BrowseActivity extends AppCompatActivity {
                         isLastPage = true;
                     }
                 } else {
-                    bookList.addAll(books);
-                    applyFiltersAndSort();
+                    int startPosition = filteredBookList.size();
+
+                    // Filter out books from 1984 or older if there is an empty search query or a category filter is active
+                    List<Book> validBooks = new ArrayList<>();
+                    boolean shouldFilterByDate = currentQuery.isEmpty();
+                    
+                    if (shouldFilterByDate) {
+                        for (Book book : books) {
+                            String date = book.getPublishedDate();
+                            if (date != null && !date.isEmpty()) {
+                                try {
+                                    // Google Books dates can be YYYY-MM-DD or just YYYY
+                                    int year = Integer.parseInt(date.substring(0, 4));
+                                    if (year > 1984) {
+                                        validBooks.add(book);
+                                    }
+                                } catch (Exception e) {
+                                    validBooks.add(book);
+                                }
+                            } else {
+                                // If no date, keep it
+                                validBooks.add(book);
+                            }
+                        }
+                    } else {
+                        validBooks.addAll(books);
+                    }
+
+                    if (validBooks.isEmpty() && !isLastPage) {
+                        startIndex += maxResults;
+                        isLoading = false;
+                        loadBooks();
+                        return;
+                    }
+
+                    bookList.addAll(validBooks);
+                    filteredBookList.addAll(validBooks);
+                    
+                    // Notify only about the new items appended at the bottom
+                    adapter.notifyItemRangeInserted(startPosition, validBooks.size());
+
                     startIndex += maxResults;
 
-                    // If we received fewer books than requested, it might be the end of results
                     if (books.size() < maxResults) {
                         isLastPage = true;
                     }
 
-                    // If filtering resulted in very few items visible, try to load more immediately
                     if (filteredBookList.size() < 5 && !isLastPage) {
                         loadBooks();
                     }
@@ -381,15 +370,15 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         if (apiQuery.isEmpty()) {
-            repo.getTrendingBooks(startIndex, maxResults, callback);
+            repo.getTrendingBooks(startIndex, maxResults, selectedSort, callback);
         } else {
-            repo.searchBooks(apiQuery, startIndex, maxResults, callback);
+            repo.searchBooks(apiQuery, startIndex, maxResults, selectedSort, callback);
         }
     }
 
     private void searchByCategoryKeyword(BookRepository repo, BookRepository.BookCallback callback) {
         String fallbackQuery = currentQuery.isEmpty() ? selectedCategory : currentQuery + " " + selectedCategory;
-        repo.searchBooks(fallbackQuery, startIndex, maxResults, callback);
+        repo.searchBooks(fallbackQuery, startIndex, maxResults, selectedSort, callback);
     }
 
     @Override

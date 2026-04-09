@@ -55,18 +55,21 @@ public class BookRepository {
     /**
      * Fetches a random set of books for the initial browse screen state.
      */
-    public void getTrendingBooks(int startIndex, int maxResults, BookCallback callback) {
+    public void getTrendingBooks(int startIndex, int maxResults, String orderBy, BookCallback callback) {
         String randomQuery = randomQueries[new Random().nextInt(randomQueries.length)];
-        
-        api.searchBooks(randomQuery, API_KEY, startIndex, maxResults).enqueue(new Callback<GoogleBooksResponse>() {
+
+        api.searchBooks(randomQuery, API_KEY, startIndex, maxResults, orderBy).enqueue(new Callback<GoogleBooksResponse>() {
             @Override
             public void onResponse(Call<GoogleBooksResponse> call, Response<GoogleBooksResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Book> books = mapResponseToBooks(response.body());
-                    // Shuffle for added variety
-                    Collections.shuffle(books);
-                    // Sort so books with ratings show up first by default
-                    sortBooksByRatingDescending(books);
+                    
+
+                    if (!"newest".equals(orderBy)) {
+                        // Shuffle for added variety
+                        Collections.shuffle(books);
+                    }
+                    
                     callback.onSuccess(books);
                 } else {
                     callback.onError(new Exception("Failed to fetch books"));
@@ -83,14 +86,18 @@ public class BookRepository {
     /**
      * Searches for books based on a user-provided query.
      */
-    public void searchBooks(String query, int startIndex, int maxResults, BookCallback callback) {
-        api.searchBooks(query, API_KEY, startIndex, maxResults).enqueue(new Callback<GoogleBooksResponse>() {
+    public void searchBooks(String query, int startIndex, int maxResults, String orderBy, BookCallback callback) {
+        api.searchBooks(query, API_KEY, startIndex, maxResults, orderBy).enqueue(new Callback<GoogleBooksResponse>() {
             @Override
             public void onResponse(Call<GoogleBooksResponse> call, Response<GoogleBooksResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Book> books = mapResponseToBooks(response.body());
-                    // Sort so books with ratings show up first by default
-                    sortBooksByRatingDescending(books);
+                    
+
+                    if (!"newest".equals(orderBy)) {
+
+                    }
+
                     callback.onSuccess(books);
                 } else {
                     callback.onError(new Exception("Failed to search books"));
@@ -101,23 +108,6 @@ public class BookRepository {
             public void onFailure(Call<GoogleBooksResponse> call, Throwable t) {
                 callback.onError(t);
             }
-        });
-    }
-
-    /**
-     * Helper to sort books such that those with higher ratings appear first.
-     */
-    private void sortBooksByRatingDescending(List<Book> books) {
-        Collections.sort(books, (b1, b2) -> {
-            Double r1 = b1.getAverageRating();
-            Double r2 = b2.getAverageRating();
-            
-            if (r1 != null && r2 == null) return -1;
-            if (r1 == null && r2 != null) return 1;
-            if (r1 != null && r2 != null) {
-                return r2.compareTo(r1);
-            }
-            return 0;
         });
     }
 

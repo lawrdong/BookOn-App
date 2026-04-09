@@ -41,6 +41,26 @@ public class LoginActivity extends AppCompatActivity {
         Button btnLogin = findViewById(R.id.btnLogin);
         TextView tvRegister = findViewById(R.id.tvRegister);
 
+        // Navigation Tabs
+        TextView tabHome = findViewById(R.id.tabHome);
+        TextView tabBrowse = findViewById(R.id.tabBrowse);
+        TextView tabCommunity = findViewById(R.id.tabCommunity);
+
+        tabHome.setOnClickListener(v -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
+
+        tabBrowse.setOnClickListener(v -> {
+            startActivity(new Intent(this, BrowseActivity.class));
+            finish();
+        });
+
+        tabCommunity.setOnClickListener(v -> {
+            startActivity(new Intent(this, CommunityActivity.class));
+            finish();
+        });
+
         btnLogin.setOnClickListener(v -> loginUser());
 
         tvRegister.setOnClickListener(v -> {

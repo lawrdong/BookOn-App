@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sort_by"
+        android:text="Sort by"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
@@ -16,31 +16,21 @@
     <RadioGroup
         android:id="@+id/rgSort"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
 
         <RadioButton
-            android:id="@+id/rbRatingHighLow"
+            android:id="@+id/rbRelevance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/rating_high_to_low" />
+            android:text="Relevance"
+            android:checked="true" />
 
         <RadioButton
-            android:id="@+id/rbRatingLowHigh"
+            android:id="@+id/rbNewest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/rating_low_to_high" />
-
-        <RadioButton
-            android:id="@+id/rbDateNewest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/date_newest_to_oldest" />
-
-        <RadioButton
-            android:id="@+id/rbDateOldest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/date_oldest_to_newest" />
+            android:text="Newest" />
     </RadioGroup>
 
     <TextView
@@ -49,7 +39,6 @@
         android:text="@string/filter_by_category"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp" />
 
     <Button
