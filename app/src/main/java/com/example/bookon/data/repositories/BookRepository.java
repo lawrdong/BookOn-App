@@ -26,7 +26,7 @@ public class BookRepository {
      * Google Books API Key
      * You can ask me for it (Kevin) or you can make your own key if that's easier for you
      */
-    private static final String API_KEY = "api key goes here";
+    private static final String API_KEY = "AIzaSyAyze48RZJBA9fxaznRTvaR8uJZiytY1YI";
 
     // Queries used for random initial loading
     private final String[] randomQueries = {
@@ -52,24 +52,26 @@ public class BookRepository {
         void onError(Throwable t);
     }
 
+    public String getRandomTrendingQuery() {
+        return randomQueries[new Random().nextInt(randomQueries.length)];
+    }
+
     /**
      * Fetches a random set of books for the initial browse screen state.
      */
     public void getTrendingBooks(int startIndex, int maxResults, String orderBy, BookCallback callback) {
-        String randomQuery = randomQueries[new Random().nextInt(randomQueries.length)];
+        getTrendingBooks(getRandomTrendingQuery(), startIndex, maxResults, orderBy, callback);
+    }
 
-        api.searchBooks(randomQuery, API_KEY, startIndex, maxResults, orderBy).enqueue(new Callback<GoogleBooksResponse>() {
+    /**
+     * Fetches a set of books for the trending state using a specific query.
+     */
+    public void getTrendingBooks(String query, int startIndex, int maxResults, String orderBy, BookCallback callback) {
+        api.searchBooks(query, API_KEY, startIndex, maxResults, orderBy).enqueue(new Callback<GoogleBooksResponse>() {
             @Override
             public void onResponse(Call<GoogleBooksResponse> call, Response<GoogleBooksResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Book> books = mapResponseToBooks(response.body());
-                    
-
-                    if (!"newest".equals(orderBy)) {
-                        // Shuffle for added variety
-                        Collections.shuffle(books);
-                    }
-                    
                     callback.onSuccess(books);
                 } else {
                     callback.onError(new Exception("Failed to fetch books"));

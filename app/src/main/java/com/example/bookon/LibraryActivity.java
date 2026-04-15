@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.bookon.data.models.Book;
 import com.example.bookon.data.repositories.BookRepository;
 import com.example.bookon.ui.activities.AccountActivity;
+import com.example.bookon.ui.activities.BookDetailActivity;
 import com.example.bookon.ui.activities.BrowseActivity;
 import com.example.bookon.ui.activities.CommunityActivity;
 import com.example.bookon.ui.activities.LoginActivity;
@@ -81,7 +82,18 @@ public class LibraryActivity extends AppCompatActivity {
                     }
                 }
 
-                BookAdapter adapter = new BookAdapter(favoriteBooks);
+                BookAdapter adapter = new BookAdapter(favoriteBooks, book -> {
+                    Intent intent = new Intent(LibraryActivity.this, BookDetailActivity.class);
+                    intent.putExtra("id", book.getId());
+                    intent.putExtra("title", book.getTitle());
+                    intent.putExtra("authors", book.getAuthors());
+                    intent.putExtra("description", book.getDescription());
+                    intent.putExtra("thumbnailUrl", book.getThumbnailUrl());
+                    intent.putExtra("publishedDate", book.getPublishedDate());
+                    intent.putExtra("averageRating", book.getAverageRating() != null ? book.getAverageRating() : 0.0);
+                    intent.putExtra("ratingsCount", book.getRatingsCount() != null ? book.getRatingsCount() : 0);
+                    startActivity(intent);
+                });
                 recyclerView.setAdapter(adapter);
             }
 

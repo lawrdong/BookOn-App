@@ -56,6 +56,7 @@ public class BrowseActivity extends AppCompatActivity {
 
     private String selectedCategory = "All Categories";
     private String selectedSort = "relevance";
+    private String activeTrendingQuery = null;
 
     // Standard BISAC Top-Level Categories
     private final String[] bisacCategories = {
@@ -173,8 +174,10 @@ public class BrowseActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewBooks);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new BookAdapter(filteredBookList, book -> {
-            if (selectForPost) {
+
+        BookAdapter.OnBookClickListener clickListener = null;
+        if (selectForPost) {
+            clickListener = book -> {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("id", book.getId());
                 resultIntent.putExtra("title", book.getTitle());
@@ -182,8 +185,10 @@ public class BrowseActivity extends AppCompatActivity {
                 resultIntent.putExtra("thumbnailUrl", book.getThumbnailUrl());
                 setResult(RESULT_OK, resultIntent);
                 finish();
-            }
-        });
+            };
+        }
+
+        adapter = new BookAdapter(filteredBookList, clickListener);
         recyclerView.setAdapter(adapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -352,8 +357,7 @@ public class BrowseActivity extends AppCompatActivity {
 
                     bookList.addAll(validBooks);
                     filteredBookList.addAll(validBooks);
-                    
-                    // Notify only about the new items appended at the bottom
+
                     adapter.notifyItemRangeInserted(startPosition, validBooks.size());
 
                     startIndex += maxResults;
@@ -388,8 +392,12 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         if (apiQuery.isEmpty()) {
-            repo.getTrendingBooks(startIndex, maxResults, selectedSort, callback);
+            if (activeTrendingQuery == null) {
+                activeTrendingQuery = repo.getRandomTrendingQuery();
+            }
+            repo.getTrendingBooks(activeTrendingQuery, startIndex, maxResults, selectedSort, callback);
         } else {
+            activeTrendingQuery = null;
             repo.searchBooks(apiQuery, startIndex, maxResults, selectedSort, callback);
         }
     }
