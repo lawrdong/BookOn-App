@@ -26,7 +26,7 @@ public class BookRepository {
      * Google Books API Key
      * You can ask me for it (Kevin) or you can make your own key if that's easier for you
      */
-    private static final String API_KEY = "AIzaSyAyze48RZJBA9fxaznRTvaR8uJZiytY1YI";
+    private static final String API_KEY = "api_key_goes_here";
 
     // Queries used for random initial loading
     private final String[] randomQueries = {
