@@ -120,6 +120,10 @@ public class BookDetailActivity extends AppCompatActivity {
                 Intent reviewIntent = new Intent(this, WriteReviewActivity.class);
                 reviewIntent.putExtra("id", intent.getStringExtra("id"));
                 reviewIntent.putExtra("title", title);
+                reviewIntent.putExtra("authors", authors);
+                reviewIntent.putExtra("thumbnailUrl", thumbnailUrl);
+                reviewIntent.putExtra("publishedDate", publishedDate);
+                reviewIntent.putExtra("averageRating", averageRating);
                 startActivity(reviewIntent);
             }
         });

@@ -24,6 +24,7 @@ public class AccountActivity extends AppCompatActivity {
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
         Button btnAccountCreatePost = findViewById(R.id.btnAccountCreatePost);
+        Button btnLogout = findViewById(R.id.btnLogout);
 
         //nav click listeners
         tabHome.setOnClickListener(v -> {
@@ -53,8 +54,17 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
 
-        btnAccountCreatePost.setOnClickListener(v ->
-                startActivity(new Intent(this, ShelvesActivity.class)));
+        btnAccountCreatePost.setOnClickListener(v -> {
+            Intent shelvesIntent = new Intent(this, ShelvesActivity.class);
+            shelvesIntent.putExtra("fromAccountShelves", true);
+            startActivity(shelvesIntent);
+        });
+
+        btnLogout.setOnClickListener(v -> {
+            AuthManager.logout();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        });
     }
 
     @Override

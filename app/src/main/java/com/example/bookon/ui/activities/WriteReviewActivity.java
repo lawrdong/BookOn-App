@@ -3,18 +3,23 @@ package com.example.bookon.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.bookon.R;
 import com.example.bookon.data.api.BookOnApi;
 import com.example.bookon.utils.AuthManager;
+
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +51,10 @@ public class WriteReviewActivity extends AppCompatActivity {
         TextView tabCommunity = findViewById(R.id.tabCommunity);
         tabLogin = findViewById(R.id.tabLogin);
 
+        ImageView ivReviewBookCover = findViewById(R.id.ivReviewBookCover);
         TextView tvSelectedReviewBook = findViewById(R.id.tvSelectedReviewBook);
+        TextView tvSelectedReviewAuthor = findViewById(R.id.tvSelectedReviewAuthor);
+        TextView tvSelectedReviewMeta = findViewById(R.id.tvSelectedReviewMeta);
         Spinner spinnerRating = findViewById(R.id.spinnerRating);
         EditText etReviewText = findViewById(R.id.etReviewText);
         Button btnSubmitReview = findViewById(R.id.btnSubmitReview);
@@ -61,7 +69,31 @@ public class WriteReviewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         bookId = intent.getStringExtra("id");
         bookTitle = intent.getStringExtra("title");
-        tvSelectedReviewBook.setText(bookTitle);
+        String authors = intent.getStringExtra("authors");
+        String thumbnailUrl = intent.getStringExtra("thumbnailUrl");
+        String publishedDate = intent.getStringExtra("publishedDate");
+        double averageRating = intent.getDoubleExtra("averageRating", 0.0);
+
+        tvSelectedReviewBook.setText(bookTitle != null ? bookTitle : "Book Title");
+        tvSelectedReviewAuthor.setText(authors != null && !authors.isEmpty() ? authors : "Unknown Author");
+
+        if (averageRating > 0) {
+            tvSelectedReviewMeta.setVisibility(View.VISIBLE);
+            tvSelectedReviewMeta.setText(String.format(Locale.getDefault(), "★ %.1f", averageRating));
+        } else if (publishedDate != null && !publishedDate.isEmpty()) {
+            tvSelectedReviewMeta.setVisibility(View.VISIBLE);
+            tvSelectedReviewMeta.setText(publishedDate.split("-")[0]);
+        } else {
+            tvSelectedReviewMeta.setText("");
+            tvSelectedReviewMeta.setVisibility(View.GONE);
+        }
+
+        if (thumbnailUrl != null && !thumbnailUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(thumbnailUrl)
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .into(ivReviewBookCover);
+        }
 
         // Setup Rating Spinner
         String[] ratings = {"1", "2", "3", "4", "5"};

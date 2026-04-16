@@ -45,6 +45,7 @@ public class BookReviewsActivity extends AppCompatActivity {
         tabLogin = findViewById(R.id.tabLogin);
         TextView tvReviewsTitle = findViewById(R.id.tvReviewsTitle);
         TextView tvReviewsSubtitle = findViewById(R.id.tvReviewsSubtitle);
+        TextView btnBackReviews = findViewById(R.id.btnBackReviews);
         layoutReviewsContainer = findViewById(R.id.layoutReviewsContainer);
         tvNoReviews = findViewById(R.id.tvNoReviews);
         Button btnSortReviews = findViewById(R.id.btnSortReviews);
@@ -67,6 +68,7 @@ public class BookReviewsActivity extends AppCompatActivity {
         tabHome.setOnClickListener(v -> navigateTo(MainActivity.class));
         tabBrowse.setOnClickListener(v -> navigateTo(BrowseActivity.class));
         tabCommunity.setOnClickListener(v -> navigateTo(CommunityActivity.class));
+        btnBackReviews.setOnClickListener(v -> finish());
         tabLogin.setOnClickListener(v -> {
             if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));

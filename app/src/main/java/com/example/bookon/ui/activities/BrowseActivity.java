@@ -134,6 +134,10 @@ public class BrowseActivity extends AppCompatActivity {
 
         if (tvBrowsePickerBanner != null) {
             tvBrowsePickerBanner.setVisibility(selectForPost ? View.VISIBLE : View.GONE);
+            String pickerBannerText = getIntent().getStringExtra("pickerBannerText");
+            if (pickerBannerText != null && !pickerBannerText.isEmpty()) {
+                tvBrowsePickerBanner.setText(pickerBannerText);
+            }
         }
 
         // Navigation

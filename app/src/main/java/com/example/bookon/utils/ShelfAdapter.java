@@ -39,7 +39,11 @@ public class ShelfAdapter extends RecyclerView.Adapter<ShelfAdapter.ShelfViewHol
 
         holder.tvShelfTitle.setText(shelf.getTitle());
         holder.tvShelfDescription.setText(shelf.getDescription());
-        holder.tvShelfCount.setText(shelf.getBookCount() + " books");
+        if (shelf.getBookCount() > 0) {
+            holder.tvShelfCount.setText(shelf.getBookCount() + " books");
+        } else {
+            holder.tvShelfCount.setText("No books in this shelf yet");
+        }
 
         holder.itemView.setOnClickListener(v -> listener.onShelfClick(shelf));
     }

@@ -89,27 +89,66 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_surface_soft"
+                android:background="@drawable/bg_surface_card"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="18dp">
 
-                <TextView
-                    android:id="@+id/tvWriteReviewTitle"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layoutReviewBookCard"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/review_heading"
-                    android:textColor="@color/text_primary"
-                    android:textSize="26sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:padding="0dp">
 
-                <TextView
-                    android:id="@+id/tvSelectedReviewBook"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Book Title"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="16sp" />
+                    <ImageView
+                        android:id="@+id/ivReviewBookCover"
+                        android:layout_width="72dp"
+                        android:layout_height="100dp"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/bg_surface_soft"
+                        android:contentDescription="@null"
+                        android:padding="4dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_book_placeholder" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvSelectedReviewBook"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Book Title"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSelectedReviewAuthor"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="Author"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvSelectedReviewMeta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text=""
+                            android:textColor="@color/accent_gold"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -158,7 +197,7 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_field"
                     android:gravity="top|start"
-                    android:hint="Share your thoughts about this book"
+                    android:hint="Share your thoughts!"
                     android:inputType="textMultiLine"
                     android:padding="14dp"
                     android:textColor="@color/text_primary"
