@@ -55,13 +55,15 @@ public class ShelfAdapter extends RecyclerView.Adapter<ShelfAdapter.ShelfViewHol
 
     static class ShelfViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvShelfTitle, tvShelfDescription, tvShelfCount;
+        TextView tvShelfTitle, tvShelfDescription, tvShelfCount, btnDeleteShelf;
 
         public ShelfViewHolder(View itemView) {
             super(itemView);
             tvShelfTitle = itemView.findViewById(R.id.tvShelfTitle);
             tvShelfDescription = itemView.findViewById(R.id.tvShelfDescription);
             tvShelfCount = itemView.findViewById(R.id.tvShelfCount);
+            btnDeleteShelf = itemView.findViewById(R.id.btnDeleteShelf);
+            btnDeleteShelf.setVisibility(View.GONE);
         }
     }
 }
