@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookon.R;
 import com.example.bookon.data.models.Shelf;
+import com.example.bookon.data.models.ShelfBook;
 import com.example.bookon.utils.AuthManager;
 import com.example.bookon.utils.ShelfAdapter;
+import com.example.bookon.utils.ShelfStorageManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class ShelvesActivity extends AppCompatActivity {
     private static final int REQUEST_SELECT_SHELF_BOOK = 2001;
     private TextView tabLogin;
     private TextView tvShelfBooksPreview;
-    private int selectedShelfBookCount = 0;
+    private final List<ShelfBook> selectedShelfBooks = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,10 @@ public class ShelvesActivity extends AppCompatActivity {
         Button btnSaveNewShelf = findViewById(R.id.btnSaveNewShelf);
         tvShelfBooksPreview = findViewById(R.id.tvShelfBooksPreview);
         String selectedBookTitle = getIntent().getStringExtra("title");
+        String selectedBookAuthors = getIntent().getStringExtra("authors");
+        String selectedBookThumbnailUrl = getIntent().getStringExtra("thumbnailUrl");
+        String selectedBookPublishedDate = getIntent().getStringExtra("publishedDate");
+        double selectedBookAverageRating = getIntent().getDoubleExtra("averageRating", 0.0);
         boolean fromAccountShelves = getIntent().getBooleanExtra("fromAccountShelves", false);
 
         // nav click listeners
@@ -96,29 +102,22 @@ public class ShelvesActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerViewShelves);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Shelf> shelves = new ArrayList<>();
-
-        shelves.add(new Shelf(
-                "Want to Read",
-                "Books I plan to read",
-                0
-        ));
-
-        shelves.add(new Shelf(
-                "Already Read",
-                "Books I've finished",
-                0
-        ));
-
-        shelves.add(new Shelf(
-                "Favorites",
-                "My all-time favorites",
-                0
-        ));
+        List<Shelf> shelves = ShelfStorageManager.getShelves(this, AuthManager.getUserId());
 
         ShelfAdapter adapter = new ShelfAdapter(shelves, shelf -> {
             if (selectedBookTitle != null && !selectedBookTitle.isEmpty()) {
-                Toast.makeText(this, "\"" + selectedBookTitle + "\" added to " + shelf.getTitle(), Toast.LENGTH_SHORT).show();
+                ShelfBook shelfBook = new ShelfBook(
+                        selectedBookTitle,
+                        selectedBookAuthors,
+                        selectedBookThumbnailUrl,
+                        selectedBookPublishedDate,
+                        selectedBookAverageRating
+                );
+                boolean added = ShelfStorageManager.addBookToShelf(this, AuthManager.getUserId(), shelf.getTitle(), shelfBook);
+                Toast.makeText(this,
+                        added ? "\"" + selectedBookTitle + "\" added to " + shelf.getTitle()
+                                : "\"" + selectedBookTitle + "\" is already in " + shelf.getTitle(),
+                        Toast.LENGTH_SHORT).show();
                 finish();
             } else {
                 Toast.makeText(this, shelf.getTitle(), Toast.LENGTH_SHORT).show();
@@ -152,7 +151,9 @@ public class ShelvesActivity extends AppCompatActivity {
                 return;
             }
 
-            Toast.makeText(this, "Shelf creation will connect here.", Toast.LENGTH_SHORT).show();
+            Shelf newShelf = new Shelf(shelfName, shelfDescription, selectedShelfBooks);
+            ShelfStorageManager.saveShelf(this, AuthManager.getUserId(), newShelf);
+            Toast.makeText(this, "Shelf created", Toast.LENGTH_SHORT).show();
             finish();
         });
     }
@@ -163,10 +164,27 @@ public class ShelvesActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SELECT_SHELF_BOOK && resultCode == RESULT_OK && data != null) {
             String selectedBookTitle = data.getStringExtra("title");
             if (selectedBookTitle != null && !selectedBookTitle.isEmpty()) {
-                selectedShelfBookCount++;
-                tvShelfBooksPreview.setText(selectedShelfBookCount == 1
+                ShelfBook selectedBook = new ShelfBook(
+                        selectedBookTitle,
+                        data.getStringExtra("authors"),
+                        data.getStringExtra("thumbnailUrl"),
+                        data.getStringExtra("publishedDate"),
+                        data.getDoubleExtra("averageRating", 0.0)
+                );
+                boolean alreadyAdded = false;
+                for (ShelfBook book : selectedShelfBooks) {
+                    if (selectedBookTitle.equalsIgnoreCase(book.getTitle())) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (alreadyAdded) {
+                    return;
+                }
+                selectedShelfBooks.add(selectedBook);
+                tvShelfBooksPreview.setText(selectedShelfBooks.size() == 1
                         ? selectedBookTitle
-                        : selectedShelfBookCount + " books added");
+                        : selectedShelfBooks.size() + " books selected");
             }
         }
     }

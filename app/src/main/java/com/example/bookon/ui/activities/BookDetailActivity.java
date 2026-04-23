@@ -109,6 +109,10 @@ public class BookDetailActivity extends AppCompatActivity {
             } else {
                 Intent shelfIntent = new Intent(this, ShelvesActivity.class);
                 shelfIntent.putExtra("title", title);
+                shelfIntent.putExtra("authors", authors);
+                shelfIntent.putExtra("thumbnailUrl", thumbnailUrl);
+                shelfIntent.putExtra("publishedDate", publishedDate);
+                shelfIntent.putExtra("averageRating", averageRating);
                 startActivity(shelfIntent);
             }
         });

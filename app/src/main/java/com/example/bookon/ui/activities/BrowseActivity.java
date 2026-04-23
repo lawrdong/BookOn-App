@@ -187,6 +187,8 @@ public class BrowseActivity extends AppCompatActivity {
                 resultIntent.putExtra("title", book.getTitle());
                 resultIntent.putExtra("authors", book.getAuthors());
                 resultIntent.putExtra("thumbnailUrl", book.getThumbnailUrl());
+                resultIntent.putExtra("publishedDate", book.getPublishedDate());
+                resultIntent.putExtra("averageRating", book.getAverageRating() != null ? book.getAverageRating() : 0.0);
                 setResult(RESULT_OK, resultIntent);
                 finish();
             };
