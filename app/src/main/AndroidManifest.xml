@@ -30,6 +30,7 @@
         </activity>
         <activity android:name=".ui.activities.LoginActivity" />
         <activity android:name=".ui.activities.AccountActivity" />
+        <activity android:name=".ui.activities.ShelfDetailActivity" />
         <activity android:name=".ui.activities.BookDetailActivity" />
         <activity android:name=".ui.activities.BookReviewsActivity" />
         <activity android:name=".ui.activities.ShelvesActivity" />
