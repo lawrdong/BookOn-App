@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bookon.data.models.CategorySection;
+import com.example.bookon.utils.CategorySectionAdapter;
 import com.example.bookon.utils.AuthManager;
 import com.example.bookon.utils.BookAdapter;
 import com.example.bookon.data.repositories.BookRepository;
@@ -40,18 +42,21 @@ public class BrowseActivity extends AppCompatActivity {
     private boolean selectForPost;
     private RecyclerView recyclerView;
     private BookAdapter adapter;
+    private CategorySectionAdapter categorySectionAdapter;
     private ProgressBar progressBar;
     private EditText etSearch;
     private Button btnSearch;
     private ImageButton btnFilter;
     private List<Book> bookList = new ArrayList<>();
     private List<Book> filteredBookList = new ArrayList<>();
+    private List<CategorySection> categorySections = new ArrayList<>();
 
     private int startIndex = 0;
     private final int maxResults = 20;
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private boolean isInCategoryFallbackMode = false;
+    private boolean isShowingCategories = false;
     private String currentQuery = "";
 
     private String selectedCategory = "All Categories";
@@ -195,6 +200,7 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         adapter = new BookAdapter(filteredBookList, clickListener);
+        categorySectionAdapter = new CategorySectionAdapter(categorySections, clickListener);
         recyclerView.setAdapter(adapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -206,7 +212,7 @@ public class BrowseActivity extends AppCompatActivity {
                 int totalItemCount = layoutManager.getItemCount();
                 int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-                if (!isLoading && !isLastPage) {
+                if (!isLoading && !isLastPage && !isShowingCategories) {
                     // Load more when we are near the end of the current list
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0) {
@@ -301,13 +307,26 @@ public class BrowseActivity extends AppCompatActivity {
         isInCategoryFallbackMode = false;
         bookList.clear();
         filteredBookList.clear();
+        categorySections.clear();
         adapter.notifyDataSetChanged();
+        categorySectionAdapter.notifyDataSetChanged();
         loadBooks();
     }
 
     private void loadBooks() {
-        if (isLoading || isLastPage) return;
+        if (isLoading) return;
 
+        // If no search and no filter, show categories (Netflix style)
+        if (currentQuery.isEmpty() && selectedCategory.equals("All Categories")) {
+            if (!categorySections.isEmpty()) return; // Already loaded initial categories
+            loadCategorySections();
+            return;
+        }
+
+        if (isLastPage) return;
+
+        isShowingCategories = false;
+        recyclerView.setAdapter(adapter);
         isLoading = true;
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
 
@@ -339,7 +358,7 @@ public class BrowseActivity extends AppCompatActivity {
                                 try {
                                     // Google Books dates can be YYYY-MM-DD or just YYYY
                                     int year = Integer.parseInt(date.substring(0, 4));
-                                    if (year > 1984) {
+                                    if (year > 1989) {
                                         validBooks.add(book);
                                     }
                                 } catch (Exception e) {
@@ -406,6 +425,121 @@ public class BrowseActivity extends AppCompatActivity {
             activeTrendingQuery = null;
             repo.searchBooks(apiQuery, startIndex, maxResults, selectedSort, callback);
         }
+    }
+
+    private void loadCategorySections() {
+        isShowingCategories = true;
+        recyclerView.setAdapter(categorySectionAdapter);
+        categorySections.clear();
+        categorySectionAdapter.notifyDataSetChanged();
+        
+        isLoading = true;
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        BookRepository repo = new BookRepository();
+        // Try all available categories to ensure we fill up to 6 sections
+        List<String> availableCategories = repo.getAllRandomQueries();
+        Collections.shuffle(availableCategories);
+        
+        final int TARGET_COUNT = 6;
+        final int[] categoriesFinished = {0};
+        final Random random = new Random();
+
+        for (String category : availableCategories) {
+            // Smaller random offset to increase chances of finding enough books
+            int randomStart = random.nextInt(40);
+            
+            fetchModernBooksForCategory(repo, category, randomStart, new ArrayList<>(), new BookRepository.BookCallback() {
+                @Override
+                public void onSuccess(List<Book> modernBooks) {
+                    runOnUiThread(() -> {
+                        // Only add if we haven't reached our desired count and the list isn't empty
+                        if (!modernBooks.isEmpty() && categorySections.size() < TARGET_COUNT) {
+                            // If we have at least 5 books, it's worth showing as a row
+                            if (modernBooks.size() >= 5) {
+                                Collections.shuffle(modernBooks);
+                                categorySections.add(new CategorySection(category.toUpperCase(), modernBooks));
+                                categorySectionAdapter.notifyItemInserted(categorySections.size() - 1);
+                            }
+                        }
+                        
+                        categoriesFinished[0]++;
+                        if (categorySections.size() >= TARGET_COUNT || categoriesFinished[0] == availableCategories.size()) {
+                            isLoading = false;
+                            if (progressBar != null) progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    runOnUiThread(() -> {
+                        categoriesFinished[0]++;
+                        if (categorySections.size() >= TARGET_COUNT || categoriesFinished[0] == availableCategories.size()) {
+                            isLoading = false;
+                            if (progressBar != null) progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    private void fetchModernBooksForCategory(BookRepository repo, String category, int start, List<Book> accumulated, BookRepository.BookCallback finalCallback) {
+        String queryWithDate = category + " after:1987";
+        repo.getTrendingBooks(queryWithDate, start, 40, "relevance", new BookRepository.BookCallback() {
+            @Override
+            public void onSuccess(List<Book> books) {
+                if (books.isEmpty()) {
+                    finalCallback.onSuccess(accumulated);
+                    return;
+                }
+
+                for (Book book : books) {
+                    // Double check date even with API filter
+                    String date = book.getPublishedDate();
+                    boolean isModern = true;
+                    if (date != null && date.length() >= 4) {
+                        try {
+                            int year = Integer.parseInt(date.substring(0, 4));
+                            if (year < 1988) isModern = false;
+                        } catch (NumberFormatException ignored) {}
+                    }
+
+                    if (isModern) {
+                        // Filter out unknown authors
+                        boolean hasAuthor = book.getAuthors() != null && !book.getAuthors().equalsIgnoreCase("Unknown Author");
+                        
+                        if (hasAuthor) {
+                            // Check for duplicates
+                            boolean exists = false;
+                            for (Book b : accumulated) {
+                                if (b.getId().equals(book.getId())) {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists) {
+                                accumulated.add(book);
+                            }
+                        }
+                    }
+                    if (accumulated.size() >= 20) break;
+                }
+
+                if (accumulated.size() < 20 && !books.isEmpty() && start < 400) {
+                    fetchModernBooksForCategory(repo, category, start + 40, accumulated, finalCallback);
+                } else {
+                    finalCallback.onSuccess(accumulated);
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // If error, return what we have so far
+                finalCallback.onSuccess(accumulated);
+            }
+        });
     }
 
     private void searchByCategoryKeyword(BookRepository repo, BookRepository.BookCallback callback) {

@@ -26,7 +26,7 @@ public class BookRepository {
      * Google Books API Key
      * You can ask me for it (Kevin) or you can make your own key if that's easier for you
      */
-    private static final String API_KEY = "api_key_goes_here";
+    private static final String API_KEY = "api key";
 
     // Queries used for random initial loading
     private final String[] randomQueries = {
@@ -54,6 +54,16 @@ public class BookRepository {
 
     public String getRandomTrendingQuery() {
         return randomQueries[new Random().nextInt(randomQueries.length)];
+    }
+
+    public List<String> getRandomQueries(int count) {
+        List<String> queries = new ArrayList<>(java.util.Arrays.asList(randomQueries));
+        Collections.shuffle(queries);
+        return queries.subList(0, Math.min(count, queries.size()));
+    }
+
+    public List<String> getAllRandomQueries() {
+        return new ArrayList<>(java.util.Arrays.asList(randomQueries));
     }
 
     /**
