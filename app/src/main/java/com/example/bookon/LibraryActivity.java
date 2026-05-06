@@ -40,19 +40,19 @@ public class LibraryActivity extends AppCompatActivity {
         //nav click listeners
         tabHome.setOnClickListener(v -> {
             Intent intent = new Intent(LibraryActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
         });
 
         tabBrowse.setOnClickListener(v -> {
             Intent intent = new Intent(LibraryActivity.this, BrowseActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
         });
 
         tabCommunity.setOnClickListener(v -> {
             Intent intent = new Intent(LibraryActivity.this, CommunityActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
         });
 

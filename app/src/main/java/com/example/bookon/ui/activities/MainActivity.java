@@ -29,12 +29,18 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Browse Tab
-        tabBrowse.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, BrowseActivity.class)));
+        tabBrowse.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, BrowseActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+        });
 
         // Community Tab
-        tabCommunity.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, CommunityActivity.class)));
+        tabCommunity.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CommunityActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+        });
 
         // Login Tab - no more passing "this" to AuthManager
         tabLogin.setOnClickListener(v -> {

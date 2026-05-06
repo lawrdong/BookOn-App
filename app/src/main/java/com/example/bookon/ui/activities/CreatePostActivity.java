@@ -110,7 +110,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
     private void navigateTo(Class<?> cls) {
         Intent intent = new Intent(this, cls);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 

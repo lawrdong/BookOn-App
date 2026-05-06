@@ -23,6 +23,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.bookon.data.models.CategorySection;
 import com.example.bookon.utils.CategorySectionAdapter;
@@ -40,6 +41,7 @@ public class BrowseActivity extends AppCompatActivity {
     private TextView tabLogin;
     private TextView tvBrowsePickerBanner;
     private boolean selectForPost;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private BookAdapter adapter;
     private CategorySectionAdapter categorySectionAdapter;
@@ -135,6 +137,7 @@ public class BrowseActivity extends AppCompatActivity {
         etSearch = findViewById(R.id.etSearch);
         btnSearch = findViewById(R.id.btnSearch);
         btnFilter = findViewById(R.id.btnFilter);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         selectForPost = getIntent().getBooleanExtra("selectForPost", false);
 
         if (tvBrowsePickerBanner != null) {
@@ -149,7 +152,7 @@ public class BrowseActivity extends AppCompatActivity {
         if (tabHome != null) {
             tabHome.setOnClickListener(v -> {
                 Intent intent = new Intent(BrowseActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
             });
         }
@@ -157,7 +160,7 @@ public class BrowseActivity extends AppCompatActivity {
         if (tabCommunity != null) {
             tabCommunity.setOnClickListener(v -> {
                 Intent intent = new Intent(BrowseActivity.this, CommunityActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
             });
         }
@@ -178,6 +181,20 @@ public class BrowseActivity extends AppCompatActivity {
 
         // Filter
         btnFilter.setOnClickListener(v -> showFilterDialog());
+
+        // Swipe Refresh
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            resetSearchAndReload();
+        });
+
+        // Tab click behavior
+        if (tabBrowse != null) {
+            tabBrowse.setOnClickListener(v -> {
+                if (recyclerView != null) {
+                    recyclerView.smoothScrollToPosition(0);
+                }
+            });
+        }
 
         // RecyclerView setup
         recyclerView = findViewById(R.id.recyclerViewBooks);
@@ -328,7 +345,9 @@ public class BrowseActivity extends AppCompatActivity {
         isShowingCategories = false;
         recyclerView.setAdapter(adapter);
         isLoading = true;
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null && (swipeRefreshLayout == null || !swipeRefreshLayout.isRefreshing())) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         BookRepository repo = new BookRepository();
         BookRepository.BookCallback callback = new BookRepository.BookCallback() {
@@ -336,6 +355,7 @@ public class BrowseActivity extends AppCompatActivity {
             public void onSuccess(List<Book> books) {
                 isLoading = false;
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
+                if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
 
                 if (books.isEmpty()) {
                     if (!selectedCategory.equals("All Categories") && !isInCategoryFallbackMode && startIndex == 0) {
@@ -401,6 +421,7 @@ public class BrowseActivity extends AppCompatActivity {
             public void onError(Throwable t) {
                 isLoading = false;
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
+                if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(BrowseActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         };
@@ -434,7 +455,9 @@ public class BrowseActivity extends AppCompatActivity {
         categorySectionAdapter.notifyDataSetChanged();
         
         isLoading = true;
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null && (swipeRefreshLayout == null || !swipeRefreshLayout.isRefreshing())) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         BookRepository repo = new BookRepository();
         // Try all available categories to ensure we fill up to 6 sections
@@ -467,6 +490,7 @@ public class BrowseActivity extends AppCompatActivity {
                         if (categorySections.size() >= TARGET_COUNT || categoriesFinished[0] == availableCategories.size()) {
                             isLoading = false;
                             if (progressBar != null) progressBar.setVisibility(View.GONE);
+                            if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                         }
                     });
                 }
@@ -478,6 +502,7 @@ public class BrowseActivity extends AppCompatActivity {
                         if (categorySections.size() >= TARGET_COUNT || categoriesFinished[0] == availableCategories.size()) {
                             isLoading = false;
                             if (progressBar != null) progressBar.setVisibility(View.GONE);
+                            if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                         }
                     });
                 }
