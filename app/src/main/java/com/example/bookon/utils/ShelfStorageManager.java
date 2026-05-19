@@ -45,16 +45,18 @@ public class ShelfStorageManager {
                         if (bookEntry instanceof JSONObject) {
                             JSONObject bookObject = (JSONObject) bookEntry;
                             books.add(new ShelfBook(
+                                    bookObject.optString("id"),
                                     bookObject.optString("title"),
                                     bookObject.optString("authors", "Unknown Author"),
                                     bookObject.optString("thumbnailUrl"),
+                                    bookObject.optString("description"),
                                     bookObject.optString("publishedDate"),
                                     bookObject.optDouble("averageRating", 0.0)
                             ));
                         } else {
                             String title = booksArray.optString(j);
                             if (title != null && !title.isEmpty()) {
-                                books.add(new ShelfBook(title, "Unknown Author", "", "", 0.0));
+                                books.add(new ShelfBook("", title, "Unknown Author", "", "", "", 0.0));
                             }
                         }
                     }
@@ -162,9 +164,11 @@ public class ShelfStorageManager {
                 JSONArray booksArray = new JSONArray();
                 for (ShelfBook book : shelf.getBooks()) {
                     JSONObject bookObject = new JSONObject();
+                    bookObject.put("id", book.getId());
                     bookObject.put("title", book.getTitle());
                     bookObject.put("authors", book.getAuthors());
                     bookObject.put("thumbnailUrl", book.getThumbnailUrl());
+                    bookObject.put("description", book.getDescription());
                     bookObject.put("publishedDate", book.getPublishedDate());
                     bookObject.put("averageRating", book.getAverageRating());
                     booksArray.put(bookObject);

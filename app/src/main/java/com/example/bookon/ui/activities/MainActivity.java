@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Login Tab - no more passing "this" to AuthManager
+        // Login Tab
         tabLogin.setOnClickListener(v -> {
             if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
-            // No more passing "this" to AuthManager
             tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
         }
     }

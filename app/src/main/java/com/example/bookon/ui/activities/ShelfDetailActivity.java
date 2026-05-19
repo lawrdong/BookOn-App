@@ -156,6 +156,18 @@ public class ShelfDetailActivity extends AppCompatActivity {
                     .placeholder(R.drawable.ic_book_placeholder)
                     .into(ivShelfBookCover);
 
+            row.setOnClickListener(v -> {
+                Intent intent = new Intent(this, BookDetailActivity.class);
+                intent.putExtra("id", book.getId());
+                intent.putExtra("title", book.getTitle());
+                intent.putExtra("authors", book.getAuthors());
+                intent.putExtra("thumbnailUrl", book.getThumbnailUrl());
+                intent.putExtra("description", book.getDescription());
+                intent.putExtra("publishedDate", book.getPublishedDate());
+                intent.putExtra("averageRating", book.getAverageRating());
+                startActivity(intent);
+            });
+
             btnRemoveShelfBook.setVisibility(isEditingShelf ? View.VISIBLE : View.GONE);
             btnRemoveShelfBook.setOnClickListener(v -> {
                 ShelfStorageManager.removeBookFromShelf(this, AuthManager.getUserId(), shelfTitle, book.getTitle());
@@ -231,9 +243,11 @@ public class ShelfDetailActivity extends AppCompatActivity {
             String selectedBookTitle = data.getStringExtra("title");
             if (selectedBookTitle != null && !selectedBookTitle.isEmpty()) {
                 ShelfBook selectedBook = new ShelfBook(
+                        data.getStringExtra("id"),
                         selectedBookTitle,
                         data.getStringExtra("authors"),
                         data.getStringExtra("thumbnailUrl"),
+                        data.getStringExtra("description"),
                         data.getStringExtra("publishedDate"),
                         data.getDoubleExtra("averageRating", 0.0)
                 );

@@ -49,14 +49,16 @@ public class ShelvesActivity extends AppCompatActivity {
         Button btnAddBooksToShelf = findViewById(R.id.btnAddBooksToShelf);
         Button btnSaveNewShelf = findViewById(R.id.btnSaveNewShelf);
         tvShelfBooksPreview = findViewById(R.id.tvShelfBooksPreview);
+        String selectedBookId = getIntent().getStringExtra("id");
         String selectedBookTitle = getIntent().getStringExtra("title");
         String selectedBookAuthors = getIntent().getStringExtra("authors");
         String selectedBookThumbnailUrl = getIntent().getStringExtra("thumbnailUrl");
+        String selectedBookDescription = getIntent().getStringExtra("description");
         String selectedBookPublishedDate = getIntent().getStringExtra("publishedDate");
         double selectedBookAverageRating = getIntent().getDoubleExtra("averageRating", 0.0);
         boolean fromAccountShelves = getIntent().getBooleanExtra("fromAccountShelves", false);
 
-        // nav click listeners
+        // click listeners
         tabHome.setOnClickListener(v -> {
             Intent intent = new Intent(ShelvesActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -107,9 +109,11 @@ public class ShelvesActivity extends AppCompatActivity {
         ShelfAdapter adapter = new ShelfAdapter(shelves, shelf -> {
             if (selectedBookTitle != null && !selectedBookTitle.isEmpty()) {
                 ShelfBook shelfBook = new ShelfBook(
+                        selectedBookId,
                         selectedBookTitle,
                         selectedBookAuthors,
                         selectedBookThumbnailUrl,
+                        selectedBookDescription,
                         selectedBookPublishedDate,
                         selectedBookAverageRating
                 );
@@ -165,9 +169,11 @@ public class ShelvesActivity extends AppCompatActivity {
             String selectedBookTitle = data.getStringExtra("title");
             if (selectedBookTitle != null && !selectedBookTitle.isEmpty()) {
                 ShelfBook selectedBook = new ShelfBook(
+                        data.getStringExtra("id"),
                         selectedBookTitle,
                         data.getStringExtra("authors"),
                         data.getStringExtra("thumbnailUrl"),
+                        data.getStringExtra("description"),
                         data.getStringExtra("publishedDate"),
                         data.getDoubleExtra("averageRating", 0.0)
                 );

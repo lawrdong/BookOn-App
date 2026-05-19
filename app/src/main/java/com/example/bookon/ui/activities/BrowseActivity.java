@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -210,6 +209,7 @@ public class BrowseActivity extends AppCompatActivity {
                 resultIntent.putExtra("authors", book.getAuthors());
                 resultIntent.putExtra("thumbnailUrl", book.getThumbnailUrl());
                 resultIntent.putExtra("publishedDate", book.getPublishedDate());
+                resultIntent.putExtra("description", book.getDescription());
                 resultIntent.putExtra("averageRating", book.getAverageRating() != null ? book.getAverageRating() : 0.0);
                 setResult(RESULT_OK, resultIntent);
                 finish();
@@ -247,13 +247,6 @@ public class BrowseActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_filter, null);
         builder.setView(dialogView);
 
-        RadioGroup rgSort = dialogView.findViewById(R.id.rgSort);
-        if (selectedSort.equals("newest")) {
-            rgSort.check(R.id.rbNewest);
-        } else {
-            rgSort.check(R.id.rbRelevance);
-        }
-
         Button btnCategory = dialogView.findViewById(R.id.btnCategory);
         btnCategory.setText(selectedCategory);
         btnCategory.setOnClickListener(v -> showCategorySelector(btnCategory));
@@ -261,18 +254,15 @@ public class BrowseActivity extends AppCompatActivity {
         builder.setTitle(R.string.filter_books);
         builder.setPositiveButton(R.string.apply, (dialog, which) -> {
             String newCategory = btnCategory.getText().toString();
-            String newSort = (rgSort.getCheckedRadioButtonId() == R.id.rbNewest) ? "newest" : "relevance";
 
-            if (!newCategory.equals(selectedCategory) || !newSort.equals(selectedSort)) {
+            if (!newCategory.equals(selectedCategory)) {
                 selectedCategory = newCategory;
-                selectedSort = newSort;
                 resetSearchAndReload();
             }
         });
         builder.setNeutralButton(R.string.clear_filters, (dialog, which) -> {
-            if (!selectedCategory.equals("All Categories") || !selectedSort.equals("relevance")) {
+            if (!selectedCategory.equals("All Categories")) {
                 selectedCategory = "All Categories";
-                selectedSort = "relevance";
                 resetSearchAndReload();
             }
         });
@@ -368,7 +358,8 @@ public class BrowseActivity extends AppCompatActivity {
                     int startPosition = filteredBookList.size();
 
                     // Filter out books from 1984 or older if there is an empty search query or a category filter is active
-                    List<Book> validBooks = new ArrayList<>();
+                    List<Book> validBooks = new ArrayList<>(books);
+                    /*
                     boolean shouldFilterByDate = currentQuery.isEmpty();
                     
                     if (shouldFilterByDate) {
@@ -392,6 +383,7 @@ public class BrowseActivity extends AppCompatActivity {
                     } else {
                         validBooks.addAll(books);
                     }
+                    */
 
                     if (validBooks.isEmpty() && !isLastPage) {
                         startIndex += maxResults;
@@ -460,7 +452,6 @@ public class BrowseActivity extends AppCompatActivity {
         }
 
         BookRepository repo = new BookRepository();
-        // Try all available categories to ensure we fill up to 6 sections
         List<String> availableCategories = repo.getAllRandomQueries();
         Collections.shuffle(availableCategories);
         
@@ -469,16 +460,13 @@ public class BrowseActivity extends AppCompatActivity {
         final Random random = new Random();
 
         for (String category : availableCategories) {
-            // Smaller random offset to increase chances of finding enough books
             int randomStart = random.nextInt(40);
             
             fetchModernBooksForCategory(repo, category, randomStart, new ArrayList<>(), new BookRepository.BookCallback() {
                 @Override
                 public void onSuccess(List<Book> modernBooks) {
                     runOnUiThread(() -> {
-                        // Only add if we haven't reached our desired count and the list isn't empty
                         if (!modernBooks.isEmpty() && categorySections.size() < TARGET_COUNT) {
-                            // If we have at least 5 books, it's worth showing as a row
                             if (modernBooks.size() >= 5) {
                                 Collections.shuffle(modernBooks);
                                 categorySections.add(new CategorySection(category.toUpperCase(), modernBooks));
@@ -511,7 +499,7 @@ public class BrowseActivity extends AppCompatActivity {
     }
 
     private void fetchModernBooksForCategory(BookRepository repo, String category, int start, List<Book> accumulated, BookRepository.BookCallback finalCallback) {
-        String queryWithDate = category + " after:1987";
+        String queryWithDate = category;
         repo.getTrendingBooks(queryWithDate, start, 40, "relevance", new BookRepository.BookCallback() {
             @Override
             public void onSuccess(List<Book> books) {
@@ -521,7 +509,6 @@ public class BrowseActivity extends AppCompatActivity {
                 }
 
                 for (Book book : books) {
-                    // Double check date even with API filter
                     String date = book.getPublishedDate();
                     boolean isModern = true;
                     if (date != null && date.length() >= 4) {
@@ -536,7 +523,6 @@ public class BrowseActivity extends AppCompatActivity {
                         boolean hasAuthor = book.getAuthors() != null && !book.getAuthors().equalsIgnoreCase("Unknown Author");
                         
                         if (hasAuthor) {
-                            // Check for duplicates
                             boolean exists = false;
                             for (Book b : accumulated) {
                                 if (b.getId().equals(book.getId())) {
@@ -561,7 +547,6 @@ public class BrowseActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable t) {
-                // If error, return what we have so far
                 finalCallback.onSuccess(accumulated);
             }
         });

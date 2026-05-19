@@ -8,31 +8,39 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.bookon.R;
+import com.example.bookon.data.models.Review;
+import com.example.bookon.data.repositories.BookRepository;
 import com.example.bookon.utils.AuthManager;
+import com.google.firebase.firestore.ListenerRegistration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class BookReviewsActivity extends AppCompatActivity {
 
     private TextView tabLogin;
-    private final List<ReviewItem> reviewItems = new ArrayList<>();
+    private final List<Review> reviews = new ArrayList<>();
     private LinearLayout layoutReviewsContainer;
     private View tvNoReviews;
+    private String currentBookId;
     private String currentTitle;
     private String currentAuthors;
     private String currentThumbnailUrl;
     private double currentAverageRating;
-    private int currentRatingsCount;
+    private BookRepository repository;
+    private ListenerRegistration reviewsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,24 +59,24 @@ public class BookReviewsActivity extends AppCompatActivity {
         Button btnSortReviews = findViewById(R.id.btnSortReviews);
 
         Intent intent = getIntent();
+        currentBookId = intent.getStringExtra("id");
         currentTitle = intent.getStringExtra("title");
         currentAuthors = intent.getStringExtra("authors");
         currentThumbnailUrl = intent.getStringExtra("thumbnailUrl");
         currentAverageRating = intent.getDoubleExtra("averageRating", 0.0);
-        currentRatingsCount = intent.getIntExtra("ratingsCount", 0);
-        boolean hasMockReviews = intent.getBooleanExtra("hasMockReviews", false);
+        repository = new BookRepository();
 
         tvReviewsTitle.setText(currentTitle != null ? currentTitle + " Reviews" : "Book Reviews");
-        if (hasMockReviews) {
-            tvReviewsSubtitle.setText("See what readers are saying about this specific book.");
-        } else {
-            tvReviewsSubtitle.setText("This book does not have any reviews yet.");
-        }
+        tvReviewsSubtitle.setText("See what readers are saying about this specific book.");
 
         tabHome.setOnClickListener(v -> navigateTo(MainActivity.class));
         tabBrowse.setOnClickListener(v -> navigateTo(BrowseActivity.class));
         tabCommunity.setOnClickListener(v -> navigateTo(CommunityActivity.class));
-        btnBackReviews.setOnClickListener(v -> finish());
+        btnBackReviews.setOnClickListener(v -> {
+            Intent backIntent = new Intent(this, BookDetailActivity.class);
+            backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(backIntent);
+        });
         tabLogin.setOnClickListener(v -> {
             if (AuthManager.isLoggedIn()) {
                 startActivity(new Intent(this, AccountActivity.class));
@@ -77,11 +85,46 @@ public class BookReviewsActivity extends AppCompatActivity {
             }
         });
 
-        buildMockReviews(hasMockReviews);
-        renderReviews();
+        fetchReviews();
 
         btnSortReviews.setOnClickListener(v -> showSortDialog());
-        btnSortReviews.setVisibility(hasMockReviews ? View.VISIBLE : View.GONE);
+    }
+
+    private void fetchReviews() {
+        if (currentBookId == null) return;
+        if (reviewsListener != null) reviewsListener.remove();
+
+        reviewsListener = repository.listenToReviewsForBook(currentBookId, new BookRepository.ReviewCallback() {
+            @Override
+            public void onSuccess(List<Review> fetchedReviews) {
+                reviews.clear();
+                reviews.addAll(fetchedReviews);
+                renderReviews();
+                findViewById(R.id.btnSortReviews).setVisibility(reviews.isEmpty() ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                tvNoReviews.setVisibility(View.VISIBLE);
+                if (tvNoReviews instanceof TextView) {
+                    ((TextView) tvNoReviews).setText("Error loading reviews");
+                }
+            }
+        });
+    }
+
+    private void deleteReview(Review review) {
+        if (review.getId() == null) {
+            Toast.makeText(this, "Error: Review ID is null. Cannot delete.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // The listener will handle the UI update automatically when Firestore confirms deletion
+        repository.deleteReview(review.getId(), (success, message) -> {
+            if (!success) {
+                Toast.makeText(this, "Delete failed: " + message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void navigateTo(Class<?> cls) {
@@ -90,26 +133,10 @@ public class BookReviewsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void buildMockReviews(boolean hasMockReviews) {
-        reviewItems.clear();
-        if (!hasMockReviews) {
-            return;
-        }
-
-        reviewItems.add(new ReviewItem("Reader 1", "33m ago", 5,
-                "Dummy review: I really liked this book and would recommend it to anyone looking for a thoughtful read.", 3));
-        reviewItems.add(new ReviewItem("Reader 2", "2h ago", 4,
-                "Dummy review: Strong pacing, memorable characters, and I would definitely talk about this one in the app.", 2));
-        if (currentRatingsCount > 2) {
-            reviewItems.add(new ReviewItem("Reader 3", "1d ago", 3,
-                    "Dummy review: Not my favorite ever, but still worth checking out if the premise interests you.", 1));
-        }
-    }
-
     private void renderReviews() {
         layoutReviewsContainer.removeAllViews();
 
-        if (reviewItems.isEmpty()) {
+        if (reviews.isEmpty()) {
             tvNoReviews.setVisibility(View.VISIBLE);
             return;
         }
@@ -117,8 +144,10 @@ public class BookReviewsActivity extends AppCompatActivity {
         tvNoReviews.setVisibility(View.GONE);
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (ReviewItem review : reviewItems) {
+        for (Review review : reviews) {
             View reviewView = inflater.inflate(R.layout.item_review, layoutReviewsContainer, false);
+            TextView tvReviewAvatar = reviewView.findViewById(R.id.tvReviewAvatar);
+            ImageView ivReviewUserPic = reviewView.findViewById(R.id.ivReviewUserPic);
             TextView tvReviewUser = reviewView.findViewById(R.id.tvReviewUser);
             TextView tvReviewTime = reviewView.findViewById(R.id.tvReviewTime);
             TextView tvReviewStars = reviewView.findViewById(R.id.tvReviewStars);
@@ -127,14 +156,42 @@ public class BookReviewsActivity extends AppCompatActivity {
             TextView tvReviewBookAuthor = reviewView.findViewById(R.id.tvReviewBookAuthor);
             TextView tvReviewBookRating = reviewView.findViewById(R.id.tvReviewBookRating);
             ImageView ivReviewBook = reviewView.findViewById(R.id.ivReviewBook);
+            ImageView btnDeleteReview = reviewView.findViewById(R.id.btnDeleteReview);
 
-            tvReviewUser.setText(review.userLabel);
-            tvReviewTime.setText(review.timeLabel);
-            tvReviewStars.setText(getStars(review.starCount));
-            tvReviewBody.setText(review.body);
-            tvReviewBookTitle.setText(currentTitle != null ? currentTitle : "Placeholder Book");
+            String reviewUserId = review.getUserId();
+            String currentUserId = AuthManager.getUserId();
+
+            if (currentUserId != null && currentUserId.equals(reviewUserId)) {
+                btnDeleteReview.setVisibility(View.VISIBLE);
+                btnDeleteReview.setOnClickListener(v -> {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Delete Review")
+                            .setMessage("Are you sure you want to delete this review?")
+                            .setPositiveButton("Delete", (dialog, which) -> deleteReview(review))
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
+            } else {
+                btnDeleteReview.setVisibility(View.GONE);
+            }
+
+            String userName = review.getUserName() != null ? review.getUserName() : "Reader";
+            tvReviewUser.setText(userName);
+            tvReviewAvatar.setText(userName.substring(0, 1).toUpperCase());
+            
+            if (review.getUserProfilePic() != null && !review.getUserProfilePic().isEmpty()) {
+                ivReviewUserPic.setVisibility(View.VISIBLE);
+                Glide.with(this).load(review.getUserProfilePic()).circleCrop().into(ivReviewUserPic);
+            } else {
+                ivReviewUserPic.setVisibility(View.GONE);
+            }
+
+            tvReviewTime.setText(formatDate(review.getCreatedAt()));
+            tvReviewStars.setText(getStars(review.getRating()));
+            tvReviewBody.setText(review.getReviewText());
+            tvReviewBookTitle.setText(currentTitle != null ? currentTitle : review.getBookTitle());
             tvReviewBookAuthor.setText(currentAuthors != null ? currentAuthors : "Author Name");
-            double ratingToShow = currentAverageRating > 0 ? currentAverageRating : review.starCount;
+            double ratingToShow = currentAverageRating > 0 ? currentAverageRating : review.getRating();
             tvReviewBookRating.setText(String.format(Locale.getDefault(), "★ %.1f", ratingToShow));
 
             if (currentThumbnailUrl != null) {
@@ -151,22 +208,22 @@ public class BookReviewsActivity extends AppCompatActivity {
     }
 
     private void showSortDialog() {
-        String[] options = {"Newest", "Oldest", "Highest Rated", "Lowest Rated"};
+        String[] options = {"Newest", "Highest Rated", "Lowest Rated"};
         new AlertDialog.Builder(this)
                 .setTitle("Organize reviews")
                 .setItems(options, (dialog, which) -> {
                     switch (which) {
                         case 0:
-                            Collections.sort(reviewItems, (a, b) -> Integer.compare(b.recencyRank, a.recencyRank));
+                            Collections.sort(reviews, (a, b) -> {
+                                if (a.getCreatedAt() == null || b.getCreatedAt() == null) return 0;
+                                return b.getCreatedAt().compareTo(a.getCreatedAt());
+                            });
                             break;
                         case 1:
-                            Collections.sort(reviewItems, Comparator.comparingInt(a -> a.recencyRank));
+                            Collections.sort(reviews, (a, b) -> Integer.compare(b.getRating(), a.getRating()));
                             break;
                         case 2:
-                            Collections.sort(reviewItems, (a, b) -> Integer.compare(b.starCount, a.starCount));
-                            break;
-                        case 3:
-                            Collections.sort(reviewItems, Comparator.comparingInt(a -> a.starCount));
+                            Collections.sort(reviews, Comparator.comparingInt(Review::getRating));
                             break;
                     }
                     renderReviews();
@@ -182,27 +239,28 @@ public class BookReviewsActivity extends AppCompatActivity {
         return stars.toString();
     }
 
+    private String formatDate(String timestampStr) {
+        if (timestampStr == null) return "Recently";
+        try {
+            long time = Long.parseLong(timestampStr);
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+            return sdf.format(new Date(time));
+        } catch (NumberFormatException e) {
+            return "Recently";
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (reviewsListener != null) reviewsListener.remove();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         if (tabLogin != null) {
             tabLogin.setText(AuthManager.isLoggedIn() ? "Account" : "Login");
-        }
-    }
-
-    private static class ReviewItem {
-        final String userLabel;
-        final String timeLabel;
-        final int starCount;
-        final String body;
-        final int recencyRank;
-
-        ReviewItem(String userLabel, String timeLabel, int starCount, String body, int recencyRank) {
-            this.userLabel = userLabel;
-            this.timeLabel = timeLabel;
-            this.starCount = starCount;
-            this.body = body;
-            this.recencyRank = recencyRank;
         }
     }
 }

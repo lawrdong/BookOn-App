@@ -86,6 +86,16 @@
             android:orientation="vertical"
             android:padding="18dp">
 
+            <TextView
+                android:id="@+id/btnBackToBookWrite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:paddingVertical="6dp"
+                android:text="← Back to Book"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -203,7 +213,7 @@
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSubmitReview"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
@@ -212,6 +222,16 @@
                     android:text="Submit Review"
                     android:textAllCaps="false"
                     android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnCheckReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_secondary_button"
+                    android:text="Check Reviews"
+                    android:textAllCaps="false"
+                    android:textColor="@color/brand" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

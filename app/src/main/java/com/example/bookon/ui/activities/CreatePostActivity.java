@@ -12,7 +12,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bookon.R;
+import com.example.bookon.data.models.Post;
+import com.example.bookon.data.repositories.BookRepository;
 import com.example.bookon.utils.AuthManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class CreatePostActivity extends AppCompatActivity {
 
@@ -22,6 +26,13 @@ public class CreatePostActivity extends AppCompatActivity {
     private TextView tvSelectedBookTitle;
     private TextView tvSelectedBookAuthor;
     private TextView tvSelectedBookSource;
+    
+    private String selectedBookId;
+    private String selectedBookThumbnail;
+    private String selectedBookDescription;
+    private String selectedBookPublishedDate;
+    private double selectedBookAverageRating;
+    private BookRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +46,8 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
 
+        repository = new BookRepository();
+        
         TextView tabHome = findViewById(R.id.tabHome);
         TextView tabBrowse = findViewById(R.id.tabBrowse);
         TextView tabCommunity = findViewById(R.id.tabCommunity);
@@ -47,22 +60,28 @@ public class CreatePostActivity extends AppCompatActivity {
         tvSelectedBookSource = findViewById(R.id.tvSelectedBookSource);
         Button btnAddBook = findViewById(R.id.btnAddBook);
         Button btnPublishPost = findViewById(R.id.btnPublishPost);
+        TextView btnBackToCommunity = findViewById(R.id.btnBackToCommunity);
 
         tabHome.setOnClickListener(v -> navigateTo(MainActivity.class));
         tabBrowse.setOnClickListener(v -> navigateTo(BrowseActivity.class));
         tabCommunity.setOnClickListener(v -> navigateTo(CommunityActivity.class));
         tabLogin.setOnClickListener(v -> navigateTo(AccountActivity.class));
+        btnBackToCommunity.setOnClickListener(v -> {
+            Intent backIntent = new Intent(this, CommunityActivity.class);
+            backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(backIntent);
+        });
 
         btnAddBook.setOnClickListener(v -> {
             Intent browseIntent = new Intent(this, BrowseActivity.class);
             browseIntent.putExtra("selectForPost", true);
+            browseIntent.putExtra("pickerBannerText", "Select a book to link to your post");
             startActivityForResult(browseIntent, REQUEST_SELECT_BOOK);
         });
 
         btnPublishPost.setOnClickListener(v -> {
             String title = etPostTitle.getText().toString().trim();
             String body = etPostBody.getText().toString().trim();
-            String linkedBookTitle = tvSelectedBookTitle.getText().toString().trim();
 
             if (title.isEmpty()) {
                 etPostTitle.setError("Add a title");
@@ -74,36 +93,79 @@ public class CreatePostActivity extends AppCompatActivity {
                 return;
             }
 
-            boolean hasLinkedBook = !linkedBookTitle.equals("No book selected yet");
-            String message = hasLinkedBook
-                    ? "Post with linked book will connect here."
-                    : "Post publishing flow will connect here.";
-
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-            navigateTo(CommunityActivity.class);
-            finish();
+            publishPostToFirebase(title, body);
         });
     }
 
-    private void updateSelectedBookCard(String title, String author) {
+    private void publishPostToFirebase(String title, String body) {
+        String userId = AuthManager.getUserId();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userName = "Reader";
+        if (user != null && user.getEmail() != null) {
+            userName = user.getEmail().split("@")[0];
+        }
+
+        Post post = new Post(userId, userName, title, body, String.valueOf(System.currentTimeMillis()));
+        if (selectedBookId != null) {
+            post.setBookId(selectedBookId);
+            post.setBookTitle(tvSelectedBookTitle.getText().toString());
+            post.setBookAuthor(tvSelectedBookAuthor.getText().toString());
+            post.setBookThumbnail(selectedBookThumbnail);
+            post.setBookDescription(selectedBookDescription);
+            post.setBookPublishedDate(selectedBookPublishedDate);
+            post.setBookAverageRating(selectedBookAverageRating);
+        }
+
+        Button btnPublishPost = findViewById(R.id.btnPublishPost);
+        btnPublishPost.setEnabled(false);
+        btnPublishPost.setAlpha(0.5f);
+
+        repository.publishPost(post, (success, message) -> {
+            if (success) {
+                Toast.makeText(this, "Post published!", Toast.LENGTH_SHORT).show();
+                navigateTo(CommunityActivity.class);
+                finish();
+            } else {
+                btnPublishPost.setEnabled(true);
+                btnPublishPost.setAlpha(1.0f);
+                Toast.makeText(this, "Error: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateSelectedBookCard(String id, String title, String author, String thumbnail, String description, String date, double rating) {
         layoutSelectedBookCard.setVisibility(View.VISIBLE);
         tvSelectedBookTitle.setText(title);
         tvSelectedBookAuthor.setText(author);
-        tvSelectedBookSource.setText("Added from Browse");
+        tvSelectedBookSource.setText("Linked Book");
+        selectedBookId = id;
+        selectedBookThumbnail = thumbnail;
+        selectedBookDescription = description;
+        selectedBookPublishedDate = date;
+        selectedBookAverageRating = rating;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_BOOK && resultCode == RESULT_OK && data != null) {
-            String selectedTitle = data.getStringExtra("title");
-            String selectedAuthor = data.getStringExtra("authors");
-            if (selectedTitle != null && !selectedTitle.isEmpty()) {
+            String id = data.getStringExtra("id");
+            String title = data.getStringExtra("title");
+            String author = data.getStringExtra("authors");
+            String thumbnail = data.getStringExtra("thumbnailUrl");
+            String description = data.getStringExtra("description");
+            String date = data.getStringExtra("publishedDate");
+            double rating = data.getDoubleExtra("averageRating", 0.0);
+            
+            if (title != null && !title.isEmpty()) {
                 updateSelectedBookCard(
-                        selectedTitle,
-                        selectedAuthor != null && !selectedAuthor.isEmpty()
-                                ? selectedAuthor
-                                : "Author not available");
+                        id,
+                        title,
+                        author != null && !author.isEmpty() ? author : "Unknown Author",
+                        thumbnail,
+                        description,
+                        date,
+                        rating);
             }
         }
     }

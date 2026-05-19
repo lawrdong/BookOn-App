@@ -16,16 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.bookon.R;
-import com.example.bookon.data.api.BookOnApi;
+import com.example.bookon.data.repositories.BookRepository;
 import com.example.bookon.utils.AuthManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Locale;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WriteReviewActivity extends AppCompatActivity {
 
@@ -58,12 +54,15 @@ public class WriteReviewActivity extends AppCompatActivity {
         Spinner spinnerRating = findViewById(R.id.spinnerRating);
         EditText etReviewText = findViewById(R.id.etReviewText);
         Button btnSubmitReview = findViewById(R.id.btnSubmitReview);
+        Button btnCheckReviews = findViewById(R.id.btnCheckReviews);
+        TextView btnBackToBook = findViewById(R.id.btnBackToBookWrite);
 
         // Navigation
         tabHome.setOnClickListener(v -> navigateTo(MainActivity.class));
         tabBrowse.setOnClickListener(v -> navigateTo(BrowseActivity.class));
         tabCommunity.setOnClickListener(v -> navigateTo(CommunityActivity.class));
         tabLogin.setOnClickListener(v -> navigateTo(AccountActivity.class));
+        btnBackToBook.setOnClickListener(v -> finish());
 
         // Get book data from Intent
         Intent intent = getIntent();
@@ -113,40 +112,48 @@ public class WriteReviewActivity extends AppCompatActivity {
 
             submitReviewToBackend(rating, reviewText);
         });
+
+        btnCheckReviews.setOnClickListener(v -> {
+            Intent reviewsIntent = new Intent(this, BookReviewsActivity.class);
+            reviewsIntent.putExtra("id", bookId);
+            reviewsIntent.putExtra("title", bookTitle);
+            reviewsIntent.putExtra("authors", authors);
+            reviewsIntent.putExtra("thumbnailUrl", thumbnailUrl);
+            reviewsIntent.putExtra("averageRating", averageRating);
+            startActivity(reviewsIntent);
+        });
     }
 
     private void submitReviewToBackend(int rating, String reviewText) {
         String userId = AuthManager.getUserId();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userName = "Reader";
+        String userProfilePic = null;
 
-        // Initialize Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BookOnApi.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        BookOnApi api = retrofit.create(BookOnApi.class);
-
-        // Prepare request
-        BookOnApi.ReviewRequest request = new BookOnApi.ReviewRequest(
-                userId, bookId, bookTitle, rating, reviewText
-        );
-
-        // Send request
-        api.postReview(request).enqueue(new Callback<BookOnApi.SimpleResponse>() {
-            @Override
-            public void onResponse(Call<BookOnApi.SimpleResponse> call, Response<BookOnApi.SimpleResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().success) {
-                    Toast.makeText(WriteReviewActivity.this, "Review posted successfully!", Toast.LENGTH_SHORT).show();
-                    finish(); // Go back to the previous screen
-                } else {
-                    Toast.makeText(WriteReviewActivity.this, "Failed to post review", Toast.LENGTH_SHORT).show();
-                }
+        if (currentUser != null) {
+            if (currentUser.getDisplayName() != null && !currentUser.getDisplayName().isEmpty()) {
+                userName = currentUser.getDisplayName();
+            } else if (currentUser.getEmail() != null) {
+                userName = currentUser.getEmail().split("@")[0];
             }
+            if (currentUser.getPhotoUrl() != null) {
+                userProfilePic = currentUser.getPhotoUrl().toString();
+            }
+        }
+        
+        Button btnSubmitReview = findViewById(R.id.btnSubmitReview);
 
-            @Override
-            public void onFailure(Call<BookOnApi.SimpleResponse> call, Throwable t) {
-                Log.e("API_ERROR", "Error posting review: " + t.getMessage());
-                Toast.makeText(WriteReviewActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+        btnSubmitReview.setEnabled(false);
+        btnSubmitReview.setAlpha(0.5f);
+
+        BookRepository repository = new BookRepository();
+        repository.postReview(userId, userName, userProfilePic, bookId, bookTitle, rating, reviewText, (success, message) -> {
+            if (success) {
+                finish();
+            } else {
+                btnSubmitReview.setEnabled(true);
+                btnSubmitReview.setAlpha(1.0f);
+                Toast.makeText(WriteReviewActivity.this, "Failed to post review: " + message, Toast.LENGTH_SHORT).show();
             }
         });
     }

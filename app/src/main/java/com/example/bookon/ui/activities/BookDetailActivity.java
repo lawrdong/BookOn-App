@@ -108,9 +108,11 @@ public class BookDetailActivity extends AppCompatActivity {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
                 Intent shelfIntent = new Intent(this, ShelvesActivity.class);
+                shelfIntent.putExtra("id", intent.getStringExtra("id"));
                 shelfIntent.putExtra("title", title);
                 shelfIntent.putExtra("authors", authors);
                 shelfIntent.putExtra("thumbnailUrl", thumbnailUrl);
+                shelfIntent.putExtra("description", description);
                 shelfIntent.putExtra("publishedDate", publishedDate);
                 shelfIntent.putExtra("averageRating", averageRating);
                 startActivity(shelfIntent);

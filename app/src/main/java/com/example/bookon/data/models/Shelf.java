@@ -67,7 +67,7 @@ public class Shelf {
     private static List<ShelfBook> createPlaceholderBooks(int bookCount) {
         List<ShelfBook> placeholders = new ArrayList<>();
         for (int i = 0; i < bookCount; i++) {
-            placeholders.add(new ShelfBook("Book " + (i + 1), "Unknown Author", "", "", 0.0));
+            placeholders.add(new ShelfBook("", "Book " + (i + 1), "Unknown Author", "", "", "", 0.0));
         }
         return placeholders;
     }

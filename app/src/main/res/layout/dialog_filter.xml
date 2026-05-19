@@ -8,34 +8,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sort by"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <RadioGroup
-        android:id="@+id/rgSort"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
-
-        <RadioButton
-            android:id="@+id/rbRelevance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Relevance"
-            android:checked="true" />
-
-        <RadioButton
-            android:id="@+id/rbNewest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Newest" />
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/filter_by_category"
         android:textSize="18sp"
         android:textStyle="bold"
