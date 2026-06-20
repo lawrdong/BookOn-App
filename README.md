@@ -2,7 +2,7 @@
 
 BookOn is a comprehensive Android application designed for book enthusiasts. It allows users to discover new books, organize their reading life with custom shelves, and engage with a community of fellow readers.
 
-## 🚀 Features
+## Features
 
 - **Book Discovery**: Search the extensive Google Books database by title, author, or ISBN.
 - **Personalized Shelves**: Create and manage collections like "To Read", "Currently Reading", and "Favorites".
@@ -10,7 +10,7 @@ BookOn is a comprehensive Android application designed for book enthusiasts. It 
 - **In-depth Reviews**: Write and read detailed reviews and ratings for any book.
 - **Account Customization**: Personalize your profile and track your reading journey.
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 - Android Studio Jellyfish or newer.
@@ -26,7 +26,7 @@ BookOn is a comprehensive Android application designed for book enthusiasts. It 
    - Add your API key: `Book Respository file`.
 3. **Build and Run**: Open the project in Android Studio and run it on an emulator or physical device.
 
-## 📖 How to Use
+## How to Use
 
 ### 1. Authentication
 - **Register**: New users can create an account via the Register screen to start building their library.
